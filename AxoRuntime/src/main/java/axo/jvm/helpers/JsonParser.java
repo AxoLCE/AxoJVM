@@ -36,6 +36,85 @@ public class JsonParser {
             return null;
         }
     }
+    public static String readVersionFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "version");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+    public static String readNameFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "name");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+    public static String readAuthorFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "author");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+    public static String readDescriptionFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "description");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+    public static String readSideFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "side");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+    public static String readEntrypointFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "entrypoint");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
+
     private static String extractValue(String json, String key){
         String searchStr =  "\"" + key + "\"";
         int keyIndex = json.indexOf(searchStr);
