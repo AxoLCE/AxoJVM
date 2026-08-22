@@ -8,6 +8,21 @@ static JavaVM* g_jvm = nullptr;
 static JNIEnv* g_env = nullptr;
 static HMODULE g_jvmDll = nullptr;
 
+// Detect which side is running axo
+const char* DetectGameSide() {
+    unsigned char* base = (unsigned char*)GetModuleHandleA(NULL);
+    if (!base) return "client";
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)base;
+    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)(base + dosHeader->e_lfanew);
+    WORD subsystem = ntHeaders->OptionalHeader.Subsystem;
+
+    if (subsystem == 3) {
+        return "server";
+    }
+
+    return "client";
+}
+
 extern "C" void AxoBridge_BootstrapJVM() {
     AllocConsole();
     FILE* stream;
@@ -29,6 +44,11 @@ extern "C" void AxoBridge_BootstrapJVM() {
     //    }
     //}
 
+    const char* gameSide = DetectGameSide();
+
+    printf("[AxoJVM] Gameside: %s\n", gameSide);
+    fflush(stdout);
+
     if (!g_jvmDll) {
         printf("[AxoJVM] ERROR: jvm.dll not found\n");
         return;
@@ -47,15 +67,17 @@ extern "C" void AxoBridge_BootstrapJVM() {
     }
 
     printf("[AxoJVM] JNI_CreateJavaVM found\n");
-
-    JavaVMOption options[2] = {};
+    static char sideOptionBuf[64];
+    snprintf(sideOptionBuf, sizeof(sideOptionBuf), "-Daxo.game.side=%s", gameSide);
+    JavaVMOption options[3] = {};
     options[0].optionString = (char*)"-Djava.class.path=axojvm/axojvm-runtime.jar";
     options[1].optionString = (char*)"-Djava.home=jvm";
+    options[2].optionString = sideOptionBuf;
 
     JavaVMInitArgs args = {};
     args.version = JNI_VERSION_21;
     args.options = options;
-    args.nOptions = 2;
+    args.nOptions = 3;
     args.ignoreUnrecognized = JNI_TRUE;
 
     jint rc = createJVM(&g_jvm, (void**)&g_env, &args);
