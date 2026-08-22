@@ -11,13 +11,19 @@ public class Log {
 
     private static void log(String level, String message, boolean isError){
         String time = LocalTime.now().format(TIME_FORMAT);
-        Class<?> callerClass = WALKER.walk(stream -> stream
-                .map(StackWalker.StackFrame::getDeclaringClass)
-                .filter(clazz -> clazz != Log.class)
-                .findFirst()
-                .orElse(Log.class));
-        String callerClassName = callerClass.getName();
-        String modId = ModRegistry.getModId(callerClassName);
+        String modId = "System";
+        try {
+            Class<?> callerClass = WALKER.walk(stream -> stream
+                    .map(StackWalker.StackFrame::getDeclaringClass)
+                    .filter(clazz -> clazz != Log.class)
+                    .findFirst()
+                    .orElse(Log.class));
+            String callerClassName = callerClass.getName();
+            modId = ModRegistry.getModId(callerClassName);
+        }catch (Exception e){
+            modId = "System";
+        }
+
         String fullMessage = String.format("[%s] ["+modId+"/%s]: %s", time, level, message);
         if(isError){
             System.err.println(fullMessage);

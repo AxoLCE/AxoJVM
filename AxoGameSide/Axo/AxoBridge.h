@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 	void AxoBridge_BootstrapJVM();
+	void AxoBridge_ShutdownJVM();
 #ifdef __cplusplus
 }
 #endif

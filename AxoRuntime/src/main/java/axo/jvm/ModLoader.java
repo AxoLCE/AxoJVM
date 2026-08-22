@@ -9,7 +9,7 @@ import java.util.List;
 import java.nio.file.Path;
 
 public class ModLoader {
-    private final List<AxoMod> loadedMods = new ArrayList<>();
+    private static final List<AxoMod> loadedMods = new ArrayList<>();
     public void enableMod(Path jarPath, String mainClassName, String modId){
         try{
             URL[] urls = {jarPath.toUri().toURL()};

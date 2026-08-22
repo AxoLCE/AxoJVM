@@ -128,3 +128,37 @@ extern "C" void AxoBridge_BootstrapJVM() {
     fflush(stdout);
     g_env->DeleteLocalRef(bridgeClass);
 }
+
+extern "C" void AxoBridge_ShutdownJVM() {
+    if (!g_jvm || !g_env) {
+        return;
+    }
+    printf("[AxoJVM] Requesting JVM shutdown...\n");
+    fflush(stdout);
+
+    jclass bridgeClass = g_env->FindClass("axo/jvm/Bridge");
+    if (bridgeClass) {
+        jmethodID shutdownMethod = g_env->GetStaticMethodID(bridgeClass, "shutdown", "()V");
+        if (shutdownMethod) {
+            g_env->CallStaticVoidMethod(bridgeClass, shutdownMethod);
+            fflush(stdout);
+            fflush(stderr);
+        }
+        g_env->DeleteLocalRef(bridgeClass);
+    }
+    if (g_env->ExceptionCheck()) {
+        g_env->ExceptionDescribe();
+        g_env->ExceptionClear();
+    }
+    printf("[AxoJVM] Destroying JVM\n");
+    fflush(stdout);
+    g_jvm->DestroyJavaVM();
+    g_jvm = nullptr;
+    g_env = nullptr;
+    if (g_jvmDll) {
+        FreeLibrary(g_jvmDll);
+        g_jvmDll = nullptr;
+    }
+    printf("[AxoJVM] JVM shutdown complete\n");
+    fflush(stdout);
+}

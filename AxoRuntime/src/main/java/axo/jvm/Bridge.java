@@ -39,4 +39,9 @@ public class Bridge {
             modLoader.enableMod(jarPath, mainClass, modId);
         }
     }
+    public static void shutdown(){
+        ModLoader modLoader = new ModLoader();
+        System.out.println("[AxoJVM] Disabling mods");
+        modLoader.disableMods();
+    }
 }
