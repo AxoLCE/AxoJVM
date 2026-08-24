@@ -114,6 +114,19 @@ public class JsonParser {
             return null;
         }
     }
+    public static String readModIconFromManifest(Path jarPath){
+        try (JarFile jarFile = new JarFile(jarPath.toFile())){
+            JarEntry entry = jarFile.getJarEntry("axo.mod.json");
+            if (entry == null) return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(entry)))){
+                String jsonText = reader.lines().collect(Collectors.joining("\n"));
+                return extractValue(jsonText, "modIcon");
+            }
+        }catch (IOException e){
+            System.err.println("[AxoJVM] ERROR: Failed to parse manifest: " + jarPath.getFileName());
+            return null;
+        }
+    }
 
     private static String extractValue(String json, String key){
         String searchStr =  "\"" + key + "\"";
