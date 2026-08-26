@@ -101,6 +101,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
         }
         printf("[AxoJVM] ERROR: Bridge class not found\n");
         fflush(stdout);
+        return;
     }
 
     // registerTile method
@@ -114,6 +115,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
     if (jrc != JNI_OK) {
         if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
         printf("[AxoJVM] ERROR: RegisterNatives failed\n");
+        return;
     }
     printf("[AxoJVM] Native methods registered\n");
     fflush(stdout);
@@ -127,6 +129,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
         }
         printf("[AxoJVM] ERROR: Bridge.bootstrap() method not found\n");
         fflush(stdout);
+        return;
     }
 
     printf("[AxoJVM] Calling Bridge.bootstrap()...\n");
@@ -137,10 +140,13 @@ extern "C" void AxoBridge_BootstrapJVM() {
         g_env->ExceptionDescribe();
         g_env->ExceptionClear();
         printf("[AxoJVM] ERROR: Java exception during bootstrap\n");
+        return;
     }
     else {
         printf("[AxoJVM] Bootstrap complete\n");
     }
+    fflush(stdout);
+    g_env->DeleteLocalRef(bridgeClass);
 
 }
 
