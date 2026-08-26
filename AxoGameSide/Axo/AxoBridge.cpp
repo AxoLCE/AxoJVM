@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include "include/jni.h"
+#include "AxoBridge.h"
 
 typedef jint(JNICALL* CreateJVM_t)(JavaVM**, void**, void*);
 
@@ -102,6 +103,21 @@ extern "C" void AxoBridge_BootstrapJVM() {
         fflush(stdout);
     }
 
+    // registerTile method
+    JNINativeMethod methods[] = {
+    {"registerTile", 
+     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;Z)V",
+     (void*)Java_axo_jvm_Bridge_registerTile}
+     };
+
+    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 1);
+    if (jrc != JNI_OK) {
+        if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
+        printf("[AxoJVM] ERROR: RegisterNatives failed\n");
+    }
+    printf("[AxoJVM] Native methods registered\n");
+    fflush(stdout);
+
     // Call bootstrap
     jmethodID bootstrapMethod = g_env->GetStaticMethodID(bridgeClass, "bootstrap", "()V");
     if (!bootstrapMethod) {
@@ -125,8 +141,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
     else {
         printf("[AxoJVM] Bootstrap complete\n");
     }
-    fflush(stdout);
-    g_env->DeleteLocalRef(bridgeClass);
+
 }
 
 extern "C" void AxoBridge_ShutdownJVM() {

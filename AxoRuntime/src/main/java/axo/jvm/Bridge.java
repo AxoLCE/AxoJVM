@@ -1,5 +1,6 @@
 package axo.jvm;
 
+import axo.jvm.helpers.IdMap;
 import axo.jvm.helpers.JsonParser;
 
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ public class Bridge {
         System.out.println("[AxoJVM] Detected mods: " + fileManagment.countValidMods());
 
         fileManagment.createModsFolder();
+        IdMap.load();
         List<Path> detectedMods = fileManagment.detectMods();
         for (Path jarPath : detectedMods){
             String mainClass = JsonParser.readMainClassFromManifest(jarPath);
@@ -38,10 +40,27 @@ public class Bridge {
             }
             modLoader.enableMod(jarPath, mainClass, modId);
         }
+        modLoader.fireRegistrationEvents();
+        registerAllBlocks();
+        IdMap.save();
+        modLoader.enableMods();
     }
     public static void shutdown(){
         ModLoader modLoader = new ModLoader();
         System.out.println("[AxoJVM] Disabling mods");
         modLoader.disableMods();
     }
+    public static void registerAllBlocks(){
+        BlockRegistry.registerAllTonative();
+    }
+    public static native void registerTile(
+            int id,
+            String name,
+            String material,
+            float destroyTime,
+            float explosionResistance,
+            String soundType,
+            String iconName,
+            boolean isSolidRender
+    );
 }
