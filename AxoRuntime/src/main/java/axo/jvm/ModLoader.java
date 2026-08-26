@@ -1,6 +1,7 @@
 package axo.jvm;
 
 import axo.jvm.event.RegisterBlockEvent;
+import axo.jvm.event.RegisterItemEvent;
 import axo.jvm.helpers.ModRegistry;
 
 import java.lang.reflect.Method;
@@ -38,7 +39,9 @@ public class ModLoader {
         for (AxoMod mod: loadedMods){
             String modId = modIds.get(mod);
             RegisterBlockEvent event = new RegisterBlockEvent(modId);
+            RegisterItemEvent event1 = new RegisterItemEvent(modId);
             mod.onRegisterBlock(event);
+            mod.onRegisterItem(event1);
         }
     }
 

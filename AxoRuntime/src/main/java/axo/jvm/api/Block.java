@@ -52,6 +52,11 @@ public class Block {
         this.modId = modId;
         this.registryName = modId + ":" + properties.name;
         this.id = IdMap.getOrAllocateTileId(modId, properties.name);
+        if (properties.iconName.isEmpty()){
+            properties.iconName = "axo:" + modId + ":" + properties.name;
+        } else if (!properties.iconName.startsWith("axo:")){
+            properties.iconName = "axo:" + modId + ":" + properties.iconName;
+        }
     }
 
     // FOR LATER!!

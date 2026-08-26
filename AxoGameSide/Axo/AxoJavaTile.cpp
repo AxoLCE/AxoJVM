@@ -9,7 +9,11 @@ AxoJavaTile::AxoJavaTile(int id, Material* material, bool isSolidRender, float d
     setSoundType(soundType);
     setIconName(iconName);
 }
-
+// HARDCODED TEXTURE FOR LATER CHANGE!!!
 void AxoJavaTile::registerIcons(IconRegister* iconRegister) {
-     icon = iconRegister->registerIcon(L"stone");
-    }
+     if (m_javaIconName.rfind(L"axo:", 0) == 0) {
+		icon = iconRegister->registerIcon(L"stone");
+		return;
+	}
+	icon = iconRegister->registerIcon(m_javaIconName);
+}

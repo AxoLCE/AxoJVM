@@ -9,6 +9,7 @@
 #include "../TileItem.h"
 #include "../Item.h"
 #include "AxoTileItem.h"
+#include "AxoJavaItem.h"
 
 static std::unordered_map<std::wstring, Tile::SoundType*> g_soundMap;
 static bool g_soundMapInit = false;
@@ -105,4 +106,20 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
             printf("[AxoJVM] Registered itemblock for tile %d\n", id);
         }
         printf("[AxoJVM] Registered tile: %ls (id=%d)\n", name.c_str(), id);
+}
+void JNICALL Java_axo_jvm_Bridge_registerItem(
+    JNIEnv* env, jclass,
+    jint id,
+    jstring jname,
+    jstring jiconName,
+    jint maxStackSize
+) {
+    std::wstring name = JStringToWString(env, jname);
+    std::wstring iconName = JStringToWString(env, jiconName);
+    if (id < 1000 || id > 31999) {
+        printf("[AxoJVM] ERROR: item id %d out of range\n", id);
+        return;
+    }
+    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize);
+    printf("[AxoJVM] Registered item: %ls (id=%d)\n", name.c_str(), id);
 }

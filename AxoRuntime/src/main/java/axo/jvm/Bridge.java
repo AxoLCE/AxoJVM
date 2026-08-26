@@ -1,5 +1,6 @@
 package axo.jvm;
 
+import axo.jvm.api.Item;
 import axo.jvm.helpers.IdMap;
 import axo.jvm.helpers.JsonParser;
 
@@ -42,6 +43,7 @@ public class Bridge {
         }
         modLoader.fireRegistrationEvents();
         registerAllBlocks();
+        registerAllItem();
         IdMap.save();
         modLoader.enableMods();
     }
@@ -63,4 +65,13 @@ public class Bridge {
             String iconName,
             boolean isSolidRender
     );
+    public static native void registerItem(
+        int id,
+        String name,
+        String iconName,
+        int maxStackSize
+        );
+    public static void registerAllItem(){
+        ItemRegistry.registerAllToNative();
+    }
 }

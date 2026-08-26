@@ -25,6 +25,14 @@ extern "C++" {
         jstring jiconName,
         jboolean isSolidRender
     );
+
+    void Java_axo_jvm_Bridge_registerItem(
+        JNIEnv* env, jclass,
+        jint id,
+        jstring jname,
+        jstring jiconName,
+        jint maxStackSize
+    );
 #ifdef __cplusplus
 }
 #endif
