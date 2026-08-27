@@ -17,12 +17,14 @@ import java.util.Map;
 public class ModLoader {
     private static final List<AxoMod> loadedMods = new ArrayList<>();
     private static final Map<AxoMod, String> modIds = new HashMap<>();
+    private static final Map<String, URLClassLoader> modClassLoaders = new HashMap<>();
     public void enableMod(Path jarPath, String mainClassName, String modId){
         try{
             URL[] urls = {jarPath.toUri().toURL()};
             URLClassLoader loader = new URLClassLoader(urls, Bridge.class.getClassLoader());
             ModRegistry.register(mainClassName, modId);
             Class<?> clazz = loader.loadClass(mainClassName);
+            modClassLoaders.put(modId, loader);
             if (AxoMod.class.isAssignableFrom(clazz)){
                 AxoMod modInstance = (AxoMod) clazz.getDeclaredConstructor().newInstance();
                 modIds.put(modInstance, modId);
@@ -63,5 +65,9 @@ public class ModLoader {
                 System.out.println("[AxoJVM] ERROR: Shutting down failed with: " + e.getMessage());
             }
         }
+    }
+
+    public static URLClassLoader getModClassLoader(String modId){
+        return modClassLoaders.get(modId);
     }
 }

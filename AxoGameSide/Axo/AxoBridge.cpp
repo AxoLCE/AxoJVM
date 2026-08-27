@@ -9,6 +9,10 @@ static JavaVM* g_jvm = nullptr;
 static JNIEnv* g_env = nullptr;
 static HMODULE g_jvmDll = nullptr;
 
+JNIEnv* Axo_GetJNIEnv() {
+    return g_env;
+}
+
 // Detect which side is running axo
 const char* DetectGameSide() {
     unsigned char* base = (unsigned char*)GetModuleHandleA(NULL);
@@ -107,7 +111,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
     // Register to native
     JNINativeMethod methods[] = {
     {"registerTile", 
-     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;Z)V",
+     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZI)V",
      (void*)Java_axo_jvm_Bridge_registerTile},
     {"registerItem", "(ILjava/lang/String;Ljava/lang/String;I)V",
      (void*)Java_axo_jvm_Bridge_registerItem}

@@ -63,7 +63,8 @@ public class Bridge {
             float explosionResistance,
             String soundType,
             String iconName,
-            boolean isSolidRender
+            boolean isSolidRender,
+            int dropItemId
     );
     public static native void registerItem(
         int id,

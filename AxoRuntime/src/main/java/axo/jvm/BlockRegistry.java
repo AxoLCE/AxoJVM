@@ -20,7 +20,7 @@ public class BlockRegistry {
         BY_ID.put(block.getId(), block);
         BY_NAME.put(block.getRegistryName(), block);
         ALL.add(block);
-        System.out.println("[AxoJVM] Registered block: " + block.getRegistryName() + "id " + block.getId() + " (icon: " + block.getIconName() + ")");
+        System.out.println("[AxoJVM] Registered block: " + block.getRegistryName() + " id " + block.getId() + " (icon: " + block.getIconName() + ")");
     }
 
     public static void registerAllTonative(){
@@ -34,7 +34,8 @@ public class BlockRegistry {
                     block.getExplosionResistance(),
                     block.getSoundType(),
                     block.getIconName(),
-                    block.isSolidRender()
+                    block.isSolidRender(),
+                    block.getDropItemId()
             );
         }
         System.out.println("[AxoJVM] Native registration complete");

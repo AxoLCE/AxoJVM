@@ -1,0 +1,66 @@
+package axo.jvm;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TextureRegistry {
+    private static final int START_SLOT = 200;
+    private static int nextSlot = START_SLOT;
+
+    public static class CustomTexture {
+        public final String name;
+        public final byte[] pngBytes;
+        public final int slot;
+        public final int row;
+        public final int col;
+        public final int atlasType;
+        public final float u0;
+        public final float v0;
+        public final float u1;
+        public final float v1;
+
+        public CustomTexture(String name, byte[] pngBytes, int atlasType) {
+            this.name = name;
+            this.pngBytes = pngBytes;
+            this.atlasType = atlasType;
+            this.slot = nextSlot++;
+            this.row = this.slot / 16;
+            this.col = this.slot % 16;
+
+            float atlasHeight = (atlasType == 0) ? 512.0f : 256.0f;
+
+            this.u0 = (col * 16.0f) / 256.0f;
+            this.v0 = (row * 16.0f) / atlasHeight;
+            this.u1 = ((col + 1) * 16.0f) / 256.0f;
+            this.v1 = ((row + 1) * 16.0f) / atlasHeight;
+        }
+    }
+
+    private static final Map<String, CustomTexture> TEXTURES = new HashMap<>();
+    public static void register(String modId, String name, String resourcePath, int atlasType) {
+        String fullName = "axo:" + modId + ":" + name;
+        if (TEXTURES.containsKey(fullName)) return;
+        try {
+            InputStream is = ModLoader.getModClassLoader(modId).getResourceAsStream(resourcePath);
+            if (is == null) {
+                System.out.println("[AxoJVM] ERROR: Texture: " + resourcePath + " not found");
+                return;
+            }
+            byte[] bytes = is.readAllBytes();
+            is.close();
+            TEXTURES.put(fullName, new CustomTexture(fullName, bytes, atlasType));
+            System.out.println("[AxoJVM] Registred texture: " + fullName);
+        } catch (IOException e) {
+            System.out.println("[AxoJVM] Failed registering PNG" + e.getMessage());
+        }
+    }
+
+    public static Map<String, CustomTexture> getAll() {
+        return TEXTURES;
+    }
+}

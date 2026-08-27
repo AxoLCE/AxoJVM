@@ -14,6 +14,7 @@ extern "C" {
 extern "C++" {
 #endif
     #include "include/jni.h"
+    JNIEnv* Axo_GetJNIEnv();
     void Java_axo_jvm_Bridge_registerTile(
         JNIEnv* env, jclass,
         jint id,
@@ -23,7 +24,8 @@ extern "C++" {
         jfloat explosionResistance,
         jstring jsoundType,
         jstring jiconName,
-        jboolean isSolidRender
+        jboolean isSolidRender,
+        jint jDropItemId
     );
 
     void Java_axo_jvm_Bridge_registerItem(
@@ -33,6 +35,18 @@ extern "C++" {
         jstring jiconName,
         jint maxStackSize
     );
+#ifdef __cplusplus
+}
+#endif
+
+class PreStitchedTextureMap;
+
+#ifdef __cplusplus
+extern "C++" {
+#endif
+    class BufferedImage;
+    void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType);
+    void AxoBridge_RegisterCustomIcons(PreStitchedTextureMap* textureMap);
 #ifdef __cplusplus
 }
 #endif

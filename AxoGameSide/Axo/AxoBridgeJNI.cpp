@@ -1,3 +1,8 @@
+#include <Windows.h>
+#include <gl/GL.h>
+#ifndef GL_BGRA
+#define GL_BGRA 0x80E1
+#endif
 #include "AxoBridge.h"
 #include "AxoJavaTile.h"
 #include "../Tile.h"
@@ -10,6 +15,14 @@
 #include "../Item.h"
 #include "AxoTileItem.h"
 #include "AxoJavaItem.h"
+#include "../../Minecraft.Client/PreStitchedTextureMap.h"
+#include "../../Minecraft.Client/SimpleIcon.h"
+#include "../../Minecraft.Client/BufferedImage.h"
+#include "../../Minecraft.Client/Texture.h"
+#include "../../Minecraft.Client/Textures.h"
+#include "../../Minecraft.Client/TexturePack.h"
+#include "../../Minecraft.Client/Minecraft.h"
+#include "../../Minecraft.World/ByteBuffer.h"
 
 static std::unordered_map<std::wstring, Tile::SoundType*> g_soundMap;
 static bool g_soundMapInit = false;
@@ -60,6 +73,16 @@ static std::wstring JStringToWString(JNIEnv* env, jstring jstr) {
     env->ReleaseStringUTFChars(jstr, utf8);
     return wstr;
 }
+static jstring WStringToJString(JNIEnv* env, const wstring& wstr) {
+    if (wstr.empty()) return env->NewStringUTF("");
+    int ulen = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    std::string str(ulen > 0 ? ulen - 1 : 0, 0);
+    if (ulen > 0) {
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], ulen, nullptr, nullptr);
+    }
+    return env->NewStringUTF(str.c_str());
+}
+
 // Define registerTile
 void JNICALL Java_axo_jvm_Bridge_registerTile(
         JNIEnv* env, jclass,
@@ -70,7 +93,8 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         jfloat explosionResistance,
         jstring jsoundType,
         jstring jiconName,
-        jboolean isSolidRender
+        jboolean isSolidRender,
+        jint jDropItemId
     ) {
         InitSoundMap();
         InitMaterialMap();
@@ -99,7 +123,7 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
             printf("[AxoJVM] ERROR: tile slot %d already occupied\n", id);
             return;
         }
-        AxoJavaTile* tile = new AxoJavaTile(id, mat, isSolidRender, destroyTime, explosionResistance, sound, iconName, name);
+        AxoJavaTile* tile = new AxoJavaTile(id, mat, isSolidRender, destroyTime, explosionResistance, sound, iconName, name, jDropItemId);
         
         if (Item::items[id] == nullptr) {
             AxoTileItem* itemBlock = new AxoTileItem(id - 256, name);
@@ -122,4 +146,173 @@ void JNICALL Java_axo_jvm_Bridge_registerItem(
     }
     AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize);
     printf("[AxoJVM] Registered item: %ls (id=%d)\n", name.c_str(), id);
+}
+// Register Icons
+void AxoBridge_RegisterCustomIcons(PreStitchedTextureMap* textureMap) {
+    JNIEnv* env = Axo_GetJNIEnv();
+    if (!env) return;
+
+    jclass registryClass = env->FindClass("axo/jvm/TextureRegistry");
+    if (!registryClass) return;
+
+    jmethodID getAllMethod = env->GetStaticMethodID(registryClass, "getAll", "()Ljava/util/Map;");
+    jobject map = env->CallStaticObjectMethod(registryClass, getAllMethod);
+    if (!map) return;
+
+    jclass mapClass = env->FindClass("java/util/Map");
+    jmethodID entrySet = env->GetMethodID(mapClass, "entrySet", "()Ljava/util/Set;");
+    jobject set = env->CallObjectMethod(map, entrySet);
+
+    jclass setClass = env->FindClass("java/util/Set");
+    jmethodID iterator = env->GetMethodID(setClass, "iterator", "()Ljava/util/Iterator;");
+    jobject iter = env->CallObjectMethod(set, iterator);
+
+    jclass iterClass = env->FindClass("java/util/Iterator");
+    jmethodID hasNext = env->GetMethodID(iterClass, "hasNext", "()Z");
+    jmethodID next = env->GetMethodID(iterClass, "next", "()Ljava/lang/Object;");
+
+    jclass entryClass = env->FindClass("java/util/Map$Entry");
+    jmethodID getValue = env->GetMethodID(entryClass, "getValue", "()Ljava/lang/Object;");
+
+    jclass customTexClass = env->FindClass("axo/jvm/TextureRegistry$CustomTexture");
+    jfieldID nameField = env->GetFieldID(customTexClass, "name", "Ljava/lang/String;");
+    jfieldID u0Field = env->GetFieldID(customTexClass, "u0", "F");
+    jfieldID v0Field = env->GetFieldID(customTexClass, "v0", "F");
+    jfieldID u1Field = env->GetFieldID(customTexClass, "u1", "F");
+    jfieldID v1Field = env->GetFieldID(customTexClass, "v1", "F");
+
+    while (env->CallBooleanMethod(iter, hasNext)) {
+        jobject entry = env->CallObjectMethod(iter, next);
+        jobject customTex = env->CallObjectMethod(entry, getValue);
+
+        jfieldID atlasTypeField = env->GetFieldID(customTexClass, "atlasType", "I");
+        int atlasType = env->GetIntField(customTex, atlasTypeField);
+
+        if (atlasType != textureMap->getIconType()) {
+            env->DeleteLocalRef(entry);
+            env->DeleteLocalRef(customTex);
+            continue;
+        }
+
+        jstring jname = (jstring)env->GetObjectField(customTex, nameField);
+        const char* nameStr = env->GetStringUTFChars(jname, nullptr);
+        std::wstring wname = JStringToWString(env, jname);
+
+        float u0 = env->GetFloatField(customTex, u0Field);
+        float v0 = env->GetFloatField(customTex, v0Field);
+        float u1 = env->GetFloatField(customTex, u1Field);
+        float v1 = env->GetFloatField(customTex, v1Field);
+        textureMap->texturesByName[wname] = new SimpleIcon(wname, wname, u0, v0, u1, v1);
+
+        printf("[AxoJVM] Added icon to atlas: %ls (UV: %.3f,%.3f - %.3f,%.3f)\n", wname.c_str(), u0, v0, u1, v1);
+
+        env->ReleaseStringUTFChars(jname, nameStr);
+        env->DeleteLocalRef(entry);
+        env->DeleteLocalRef(customTex);
+        env->DeleteLocalRef(jname);
+    }
+    env->DeleteLocalRef(registryClass);
+    env->DeleteLocalRef(map);
+    env->DeleteLocalRef(mapClass);
+    env->DeleteLocalRef(set);
+    env->DeleteLocalRef(setClass);
+    env->DeleteLocalRef(iter);
+    env->DeleteLocalRef(iterClass);
+    env->DeleteLocalRef(entryClass);
+    env->DeleteLocalRef(customTexClass);
+}
+// Paint custom textures
+void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType) {
+    JNIEnv* env = Axo_GetJNIEnv();
+    if (!env || !atlasImage) return;
+
+    jclass registryClass = env->FindClass("axo/jvm/TextureRegistry");
+    if (!registryClass || env->ExceptionCheck()) {
+        if(env->ExceptionCheck())
+           env->ExceptionClear();
+        return;
+    }
+
+    jmethodID getAllMethod = env->GetStaticMethodID(registryClass, "getAll", "()Ljava/util/Map;");
+    jobject map = env->CallStaticObjectMethod(registryClass, getAllMethod);
+    if (!map) return;
+
+    jclass mapClass = env->FindClass("java/util/Map");
+    jmethodID values = env->GetMethodID(mapClass, "values", "()Ljava/util/Collection;");
+    jobject collection = env->CallObjectMethod(map, values);
+
+    jclass collClass = env->FindClass("java/util/Collection");
+    jmethodID iterator = env->GetMethodID(collClass, "iterator", "()Ljava/util/Iterator;");
+    jobject iter = env->CallObjectMethod(collection, iterator);
+
+    jclass iterClass = env->FindClass("java/util/Iterator");
+    jmethodID hasNext = env->GetMethodID(iterClass, "hasNext", "()Z");
+    jmethodID next = env->GetMethodID(iterClass, "next", "()Ljava/lang/Object;");
+
+    jclass customTexClass = env->FindClass("axo/jvm/TextureRegistry$CustomTexture");
+    jfieldID atlasTypeField = env->GetFieldID(customTexClass, "atlasType", "I");
+    jfieldID pngField = env->GetFieldID(customTexClass, "pngBytes", "[B");
+    jfieldID rowField = env->GetFieldID(customTexClass, "row", "I");
+    jfieldID colField = env->GetFieldID(customTexClass, "col", "I");
+
+    int* atlasPixels = atlasImage->getData();
+    int atlasWidth = atlasImage->getWidth();
+
+    while (env->CallBooleanMethod(iter, hasNext)) {
+        jobject customTex = env->CallObjectMethod(iter, next);
+        
+        int atlasType = env->GetIntField(customTex, atlasTypeField);
+
+        if (atlasType != iconType) {
+            env->DeleteLocalRef(customTex);
+            continue;
+        }
+
+        jbyteArray jPng = (jbyteArray)env->GetObjectField(customTex, pngField);
+        int row = env->GetIntField(customTex, rowField);
+        int col = env->GetIntField(customTex, colField);
+
+        if (jPng != nullptr) {
+            jsize size = env->GetArrayLength(jPng);
+            PBYTE pngData = new BYTE[size];
+            env->GetByteArrayRegion(jPng, 0, size, (jbyte*)pngData);
+            BufferedImage* img = new BufferedImage(pngData, size);
+            printf("[AxoJVM] PaintCustomTextures: img loaded (%dx%d)\n", img->getWidth(), img->getHeight());
+            
+            if (img && img->getWidth() == 16 && img->getHeight() == 16) {
+                int* customPixels = img->getData();
+                int* atlasPixels = atlasImage->getData();
+                
+                if (customPixels && atlasPixels) {
+                    int atlasWidth = atlasImage->getWidth();
+                    int atlasHeight = atlasImage->getHeight();
+                    
+                    int x = col * 16;
+                    int y = (int)(env->GetFloatField(customTex, env->GetFieldID(customTexClass, "v0", "F")) * atlasHeight);
+                    
+                    for (int py = 0; py < 16; py++) {
+                        for (int px = 0; px < 16; px++) {
+                            int srcIdx = py * 16 + px;
+                            int dstIdx = (y + py) * atlasWidth + (x + px);
+                            atlasPixels[dstIdx] = customPixels[srcIdx];
+                        }
+                    }
+                }
+            }
+            if (img) delete img;
+            delete[] pngData;
+        }
+
+        env->DeleteLocalRef(customTex);
+        env->DeleteLocalRef(jPng);
+    }
+
+    env->DeleteLocalRef(registryClass);
+    env->DeleteLocalRef(map);
+    env->DeleteLocalRef(mapClass);
+    env->DeleteLocalRef(collection);
+    env->DeleteLocalRef(collClass);
+    env->DeleteLocalRef(iter);
+    env->DeleteLocalRef(iterClass);
+    env->DeleteLocalRef(customTexClass);
 }

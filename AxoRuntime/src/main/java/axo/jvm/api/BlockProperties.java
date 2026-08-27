@@ -1,5 +1,8 @@
 package axo.jvm.api;
 
+import axo.jvm.ItemRegistry;
+import axo.jvm.helpers.ItemMap;
+
 public class BlockProperties {
     public String name = "";
     public String material = "stone";
@@ -8,6 +11,7 @@ public class BlockProperties {
     public String soundType = "STONE";
     public String iconName = "";
     public boolean isSolidRender = true;
+    public int dropItemId = -1;
 
     public static BlockProperties of(){
         return new BlockProperties();
@@ -38,6 +42,14 @@ public class BlockProperties {
     }
     public BlockProperties isSolidRender(boolean b){
         this.isSolidRender = b;
+        return this;
+    }
+    public BlockProperties drop(String itemName){
+        if (itemName.equalsIgnoreCase("self") || itemName.isEmpty()){
+            this.dropItemId = -1;
+        } else {
+            this.dropItemId = ItemMap.getItemIdByName(itemName);
+        }
         return this;
     }
 }

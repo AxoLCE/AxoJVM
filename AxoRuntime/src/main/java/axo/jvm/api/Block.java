@@ -44,6 +44,9 @@ public class Block {
     public boolean isSolidRender(){
         return properties.isSolidRender;
     }
+    public int getDropItemId(){
+        return properties.dropItemId;
+    }
 
     public void assignRegistry(String modId){
         if (this.id != -1){

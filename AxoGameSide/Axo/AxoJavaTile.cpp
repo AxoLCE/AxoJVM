@@ -1,19 +1,26 @@
 #include "AxoJavaTile.h"
 #include "../IconRegister.h"
+#include "../Item.h"
 
-AxoJavaTile::AxoJavaTile(int id, Material* material, bool isSolidRender, float destroyTime, float explosionResistance, SoundType* soundType, const wstring& iconName, const wstring& displayName) : Tile(id, material, isSolidRender) {
+AxoJavaTile::AxoJavaTile(int id, Material* material, bool isSolidRender, float destroyTime, float explosionResistance, SoundType* soundType, const wstring& iconName, const wstring& displayName, int dropItemId) : Tile(id, material, isSolidRender) {
     
     m_javaIconName = iconName;
     m_displayName = displayName;
+    m_dropItemId = dropItemId;
     setDestroyTime(destroyTime);
     setSoundType(soundType);
     setIconName(iconName);
+
 }
-// HARDCODED TEXTURE FOR LATER CHANGE!!!
+// not hardcoded anymore
 void AxoJavaTile::registerIcons(IconRegister* iconRegister) {
-     if (m_javaIconName.rfind(L"axo:", 0) == 0) {
-		icon = iconRegister->registerIcon(L"stone");
-		return;
-	}
 	icon = iconRegister->registerIcon(m_javaIconName);
+}
+
+// for drops
+int AxoJavaTile::getResource(int data, Random* random, int playerBonusLevel) {
+    if (m_dropItemId != -1) {
+        return m_dropItemId;
+    }
+    return Tile::getResource(data, random, playerBonusLevel);
 }
