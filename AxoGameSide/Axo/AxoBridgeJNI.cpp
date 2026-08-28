@@ -5,6 +5,7 @@
 #endif
 #include "AxoBridge.h"
 #include "AxoJavaTile.h"
+#include "AxoJavaCrop.h"
 #include "../Tile.h"
 #include "../Material.h"
 #include <unordered_map>
@@ -94,7 +95,9 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         jstring jsoundType,
         jstring jiconName,
         jboolean isSolidRender,
-        jint jDropItemId
+        jint jDropItemId,
+        jstring jRenderShape,
+        jboolean jCanWalkThrough
     ) {
         InitSoundMap();
         InitMaterialMap();
@@ -103,6 +106,11 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         std::wstring material = JStringToWString(env, jmaterial);
         std::wstring soundStr = JStringToWString(env, jsoundType);
         std::wstring iconName = JStringToWString(env, jiconName);
+        std::wstring renderShapeStr = JStringToWString(env, jRenderShape);
+
+        int renderShapeId = Tile::SHAPE_BLOCK;
+        if (renderShapeStr == L"cross") renderShapeId = Tile::SHAPE_CROSS_TEXTURE;
+        else if (renderShapeStr == L"rows") renderShapeId = Tile::SHAPE_ROWS;
 
         std::wstring soundUpper = soundStr;
         for (auto& c : soundUpper) c = towupper(c);
@@ -123,7 +131,7 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
             printf("[AxoJVM] ERROR: tile slot %d already occupied\n", id);
             return;
         }
-        AxoJavaTile* tile = new AxoJavaTile(id, mat, isSolidRender, destroyTime, explosionResistance, sound, iconName, name, jDropItemId);
+        AxoJavaTile* tile = new AxoJavaTile(id, mat, isSolidRender, destroyTime, explosionResistance, sound, iconName, name, jDropItemId, renderShapeId, jCanWalkThrough);
         
         if (Item::items[id] == nullptr) {
             AxoTileItem* itemBlock = new AxoTileItem(id - 256, name);
@@ -144,8 +152,51 @@ void JNICALL Java_axo_jvm_Bridge_registerItem(
         printf("[AxoJVM] ERROR: item id %d out of range\n", id);
         return;
     }
-    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize);
+    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, -1);
     printf("[AxoJVM] Registered item: %ls (id=%d)\n", name.c_str(), id);
+}
+
+void JNICALL Java_axo_jvm_Bridge_registerCrop(
+    JNIEnv* env, jclass,
+    jint id,
+    jstring jname,
+    jobjectArray jStageTextures,
+    jint seedItemId,
+    jint dropItemId
+) {
+    std::wstring name = JStringToWString(env, jname);
+    jsize count = env->GetArrayLength(jStageTextures);
+    std::vector<wstring> stageIconNames;
+    for (int i = 0; i < count; i++) {
+        jstring jTex = (jstring)env->GetObjectArrayElement(jStageTextures, i);
+        stageIconNames.push_back(JStringToWString(env, jTex));
+        env->DeleteLocalRef(jTex);
+    }
+
+    AxoJavaCrop* crop = new AxoJavaCrop(id, stageIconNames, seedItemId, dropItemId);
+    if (Item::items[id] == nullptr) {
+        AxoTileItem* itemBlock = new AxoTileItem(id - 256, name);
+    }
+    printf("[AxoJVM] Registered crop: %ls (id=%d)\n", name.c_str(), id);
+}
+
+void JNICALL Java_axo_jvm_Bridge_registerSeed(
+    JNIEnv* env, jclass,
+    jint id,
+    jstring jname,
+    jstring jiconName,
+    jint maxStackSize,
+    jint plantBlockId
+) {
+    std::wstring name = JStringToWString(env, jname);
+    std::wstring iconName = JStringToWString(env, jiconName);
+    
+    if (id < 1000 || id > 31999) {
+        printf("[AxoJVM] ERROR: item id %d out of range\n", id);
+        return;
+    }
+    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, plantBlockId);
+    printf("[AxoJVM] Registered seed: %ls (id=%d, plant=%d)\n", name.c_str(), id, plantBlockId);
 }
 // Register Icons
 void AxoBridge_RegisterCustomIcons(PreStitchedTextureMap* textureMap) {

@@ -13,6 +13,9 @@ public class BlockProperties {
     public boolean isSolidRender = true;
     public int dropItemId = -1;
 
+    public String renderShape = "block";
+    public boolean canWalkThrough = false;
+
     public static BlockProperties of(){
         return new BlockProperties();
     }
@@ -50,6 +53,14 @@ public class BlockProperties {
         } else {
             this.dropItemId = ItemMap.getItemIdByName(itemName);
         }
+        return this;
+    }
+    public BlockProperties renderShape(String s){
+        this.renderShape = s.toLowerCase();
+        return  this;
+    }
+    public BlockProperties canWalkThrough(boolean b){
+        this.canWalkThrough = b;
         return this;
     }
 }

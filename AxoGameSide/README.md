@@ -70,3 +70,13 @@ add:
     friend void AxoBridge_BlitCustomTextures(PreStitchedTextureMap*);
 	// AXOMARKER_END
 ```
+and in ```Minecraft.Client/Textures.cpp``` replace:
+```
+	terrain = new PreStitchedTextureMap(Icon::TYPE_TERRAIN, L"terrain", L"textures/blocks/", missingNo, true);
+	items = new PreStitchedTextureMap(Icon::TYPE_ITEM, L"items", L"textures/items/", missingNo, true);
+```
+to:
+```
+	terrain = new PreStitchedTextureMap(Icon::TYPE_TERRAIN, L"terrain", L"textures/blocks/", missingNo, false);
+	items = new PreStitchedTextureMap(Icon::TYPE_ITEM, L"items", L"textures/items/", missingNo, false);
+```

@@ -1,6 +1,7 @@
 package axo.jvm;
 
 import axo.jvm.api.Block;
+import axo.jvm.api.CropBlock;
 
 import java.util.*;
 
@@ -26,17 +27,30 @@ public class BlockRegistry {
     public static void registerAllTonative(){
         System.out.println("[AxoJVM] Registering " + BY_ID.size() + " blocks to native...");
         for (Block block : ALL){
-            Bridge.registerTile(
-                    block.getId(),
-                    block.getName(),
-                    block.getMaterial(),
-                    block.getDestroyTime(),
-                    block.getExplosionResistance(),
-                    block.getSoundType(),
-                    block.getIconName(),
-                    block.isSolidRender(),
-                    block.getDropItemId()
-            );
+            if (block instanceof CropBlock){
+                CropBlock crop = (CropBlock) block;
+                Bridge.registerCrop(
+                        crop.getId(),
+                        crop.getName(),
+                        crop.getStageTexture(),
+                        crop.getSeedItemId(),
+                        crop.getDropItemId()
+                );
+            }else {
+                Bridge.registerTile(
+                        block.getId(),
+                        block.getName(),
+                        block.getMaterial(),
+                        block.getDestroyTime(),
+                        block.getExplosionResistance(),
+                        block.getSoundType(),
+                        block.getIconName(),
+                        block.isSolidRender(),
+                        block.getDropItemId(),
+                        block.getProperties().renderShape,
+                        block.getProperties().canWalkThrough
+                );
+            }
         }
         System.out.println("[AxoJVM] Native registration complete");
     }

@@ -1,5 +1,6 @@
 package axo.jvm.api;
 
+import axo.jvm.BlockRegistry;
 import axo.jvm.helpers.IdMap;
 
 public class Block {
@@ -60,6 +61,10 @@ public class Block {
         } else if (!properties.iconName.startsWith("axo:")){
             properties.iconName = "axo:" + modId + ":" + properties.iconName;
         }
+    }
+
+    public BlockProperties getProperties(){
+        return properties;
     }
 
     // FOR LATER!!

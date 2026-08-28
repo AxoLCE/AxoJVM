@@ -8,6 +8,7 @@ public class Item {
     private String registryName;
     protected final ItemProperties properties;
 
+
     public Item(ItemProperties props){
         this.properties = props;
         if(props.name.isEmpty()){
@@ -32,6 +33,10 @@ public class Item {
     }
     public int getMaxStackSize(){
         return properties.maxStackSize;
+    }
+
+    public ItemProperties getProperties(){
+        return properties;
     }
 
     public void assignRegistry(String modId){
