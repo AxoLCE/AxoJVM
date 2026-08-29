@@ -34,7 +34,8 @@ public class BlockRegistry {
                         crop.getName(),
                         crop.getStageTexture(),
                         crop.getSeedItemId(),
-                        crop.getDropItemId()
+                        crop.getDropItemId(),
+                        crop.getRegistryName()
                 );
             }else {
                 Bridge.registerTile(
@@ -48,7 +49,8 @@ public class BlockRegistry {
                         block.isSolidRender(),
                         block.getDropItemId(),
                         block.getProperties().renderShape,
-                        block.getProperties().canWalkThrough
+                        block.getProperties().canWalkThrough,
+                        block.getRegistryName()
                 );
             }
         }

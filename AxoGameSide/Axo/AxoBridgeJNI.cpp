@@ -97,7 +97,8 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         jboolean isSolidRender,
         jint jDropItemId,
         jstring jRenderShape,
-        jboolean jCanWalkThrough
+        jboolean jCanWalkThrough,
+        jstring jRegistryName
     ) {
         InitSoundMap();
         InitMaterialMap();
@@ -107,6 +108,7 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         std::wstring soundStr = JStringToWString(env, jsoundType);
         std::wstring iconName = JStringToWString(env, jiconName);
         std::wstring renderShapeStr = JStringToWString(env, jRenderShape);
+        std::wstring registryName = JStringToWString(env, jRegistryName);
 
         int renderShapeId = Tile::SHAPE_BLOCK;
         if (renderShapeStr == L"cross") renderShapeId = Tile::SHAPE_CROSS_TEXTURE;
@@ -134,38 +136,43 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
         AxoJavaTile* tile = new AxoJavaTile(id, mat, isSolidRender, destroyTime, explosionResistance, sound, iconName, name, jDropItemId, renderShapeId, jCanWalkThrough);
         
         if (Item::items[id] == nullptr) {
-            AxoTileItem* itemBlock = new AxoTileItem(id - 256, name);
+            AxoTileItem* itemBlock = new AxoTileItem(id - 256, name, registryName);
             printf("[AxoJVM] Registered itemblock for tile %d\n", id);
         }
         printf("[AxoJVM] Registered tile: %ls (id=%d)\n", name.c_str(), id);
 }
+// Define items
 void JNICALL Java_axo_jvm_Bridge_registerItem(
     JNIEnv* env, jclass,
     jint id,
     jstring jname,
     jstring jiconName,
-    jint maxStackSize
+    jint maxStackSize,
+    jstring jRegistryName
 ) {
     std::wstring name = JStringToWString(env, jname);
     std::wstring iconName = JStringToWString(env, jiconName);
+    std::wstring registryName = JStringToWString(env, jRegistryName);
     if (id < 1000 || id > 31999) {
         printf("[AxoJVM] ERROR: item id %d out of range\n", id);
         return;
     }
-    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, -1);
+    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, -1, registryName);
     printf("[AxoJVM] Registered item: %ls (id=%d)\n", name.c_str(), id);
 }
-
+// Define crops
 void JNICALL Java_axo_jvm_Bridge_registerCrop(
     JNIEnv* env, jclass,
     jint id,
     jstring jname,
     jobjectArray jStageTextures,
     jint seedItemId,
-    jint dropItemId
+    jint dropItemId,
+    jstring jRegistryName
 ) {
     std::wstring name = JStringToWString(env, jname);
     jsize count = env->GetArrayLength(jStageTextures);
+    std::wstring registryName = JStringToWString(env, jRegistryName);
     std::vector<wstring> stageIconNames;
     for (int i = 0; i < count; i++) {
         jstring jTex = (jstring)env->GetObjectArrayElement(jStageTextures, i);
@@ -175,27 +182,30 @@ void JNICALL Java_axo_jvm_Bridge_registerCrop(
 
     AxoJavaCrop* crop = new AxoJavaCrop(id, stageIconNames, seedItemId, dropItemId);
     if (Item::items[id] == nullptr) {
-        AxoTileItem* itemBlock = new AxoTileItem(id - 256, name);
+        AxoTileItem* itemBlock = new AxoTileItem(id - 256, name,registryName);
     }
     printf("[AxoJVM] Registered crop: %ls (id=%d)\n", name.c_str(), id);
 }
 
+// Define seeds
 void JNICALL Java_axo_jvm_Bridge_registerSeed(
     JNIEnv* env, jclass,
     jint id,
     jstring jname,
     jstring jiconName,
     jint maxStackSize,
-    jint plantBlockId
+    jint plantBlockId,
+    jstring jRegistryName
 ) {
     std::wstring name = JStringToWString(env, jname);
     std::wstring iconName = JStringToWString(env, jiconName);
+    std::wstring registryName = JStringToWString(env, jRegistryName);
     
     if (id < 1000 || id > 31999) {
         printf("[AxoJVM] ERROR: item id %d out of range\n", id);
         return;
     }
-    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, plantBlockId);
+    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, plantBlockId, registryName);
     printf("[AxoJVM] Registered seed: %ls (id=%d, plant=%d)\n", name.c_str(), id, plantBlockId);
 }
 // Register Icons
@@ -366,4 +376,24 @@ void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType) {
     env->DeleteLocalRef(iter);
     env->DeleteLocalRef(iterClass);
     env->DeleteLocalRef(customTexClass);
+}
+
+std::wstring AxoBridge_GetLang(const std::string& key) {
+    JNIEnv* env = Axo_GetJNIEnv();
+    if (!env) return L"";
+    jclass langClass = env->FindClass("axo/jvm/LangRegistry");
+    if (!langClass) return L"";
+
+    jmethodID getMethod = env->GetStaticMethodID(langClass, "get", "(Ljava/lang/String;)Ljava/lang/String;");
+    if (!getMethod) return L"";
+    jstring jKey = env->NewStringUTF(key.c_str());
+    jstring jResult = (jstring)env->CallStaticObjectMethod(langClass, getMethod, jKey);
+
+    std::wstring result = JStringToWString(env, jResult);
+
+    env->DeleteLocalRef(jKey);
+    env->DeleteLocalRef(jResult);
+    env->DeleteLocalRef(langClass);
+
+    return result;
 }

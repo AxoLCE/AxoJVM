@@ -66,27 +66,31 @@ public class Bridge {
             boolean isSolidRender,
             int dropItemId,
             String renderShape,
-            boolean canWalkThrough
+            boolean canWalkThrough,
+            String registryName
     );
     public static native void registerItem(
         int id,
         String name,
         String iconName,
-        int maxStackSize
+        int maxStackSize,
+        String registryName
         );
     public static native void registerCrop(
             int id,
             String name,
             String[] stageTextures,
             int seedItemId,
-            int dropItemId
+            int dropItemId,
+            String registryName
     );
     public static native void registerSeed(
             int id,
             String name,
             String iconName,
             int maxStackSize,
-            int plantBlockId
+            int plantBlockId,
+            String registryName
     );
     public static void registerAllItem(){
         ItemRegistry.registerAllToNative();

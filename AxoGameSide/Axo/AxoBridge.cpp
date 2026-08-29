@@ -111,15 +111,15 @@ extern "C" void AxoBridge_BootstrapJVM() {
     // Register to native
     JNINativeMethod methods[] = {
     {"registerTile", 
-     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZILjava/lang/String;Z)V",
+     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZILjava/lang/String;ZLjava/lang/String;)V",
      (void*)Java_axo_jvm_Bridge_registerTile},
-    {"registerItem", "(ILjava/lang/String;Ljava/lang/String;I)V",
+    {"registerItem", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)V",
      (void*)Java_axo_jvm_Bridge_registerItem},
     { "registerCrop",
-     "(ILjava/lang/String;[Ljava/lang/String;II)V",
+     "(ILjava/lang/String;[Ljava/lang/String;IILjava/lang/String;)V",
      (void*)Java_axo_jvm_Bridge_registerCrop },
      {"registerSeed",
-     "(ILjava/lang/String;Ljava/lang/String;II)V",
+     "(ILjava/lang/String;Ljava/lang/String;IILjava/lang/String;)V",
      (void*)Java_axo_jvm_Bridge_registerSeed}
     };
     jint jrc = g_env->RegisterNatives(bridgeClass, methods, 4);

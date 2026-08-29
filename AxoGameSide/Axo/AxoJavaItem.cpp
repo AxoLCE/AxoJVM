@@ -1,11 +1,14 @@
 #include "AxoJavaItem.h"
+#include "AxoBridge.h"
 #include "../Tile.h"
 #include"../Inventory.h"
+#include "../Language.h"
 
-AxoJavaItem::AxoJavaItem(int id, const wstring& iconName, const wstring& displayName, int maxStackSize, int plantBlockId) : Item(id) {
+AxoJavaItem::AxoJavaItem(int id, const wstring& iconName, const wstring& displayName, int maxStackSize, int plantBlockId, const wstring& registryName) : Item(id) {
 	m_javaIconName = iconName;
 	m_displayName = displayName;
     m_plantBlockId = plantBlockId;
+    m_registryName = registryName;
 	setMaxStackSize(maxStackSize);
 	setIconName(iconName);
 }
@@ -35,4 +38,14 @@ bool AxoJavaItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> pl
         }
     }
     return false;
+}
+
+wstring AxoJavaItem::getHoverName(shared_ptr<ItemInstance> itemInstance) {
+    std::wstring wKey = L"item." + m_registryName + L".name";
+    std::string key(wKey.begin(), wKey.end());
+    std::wstring translated = AxoBridge_GetLang(key);
+    if (translated != wKey) {
+        return translated;
+    }
+    return m_displayName;
 }

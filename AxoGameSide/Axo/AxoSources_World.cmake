@@ -4,6 +4,7 @@ set(AXO_WORLD_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/AxoJavaTile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/AxoJavaItem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/AxoJavaCrop.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AxoTileItem.cpp
 )
 
 target_sources(Minecraft.World PRIVATE ${AXO_WORLD_SOURCES})

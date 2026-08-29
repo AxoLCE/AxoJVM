@@ -36,14 +36,16 @@ public class ItemRegistry {
                             item.getName(),
                             item.getIconName(),
                             item.getMaxStackSize(),
-                            item.getProperties().plantBlockId
+                            item.getProperties().plantBlockId,
+                            item.getRegistryName()
                     );
                 } else {
                     Bridge.registerItem(
                             item.getId(),
                             item.getName(),
                             item.getIconName(),
-                            item.getMaxStackSize()
+                            item.getMaxStackSize(),
+                            item.getRegistryName()
                     );
                 }
             }

@@ -27,7 +27,8 @@ extern "C++" {
         jboolean isSolidRender,
         jint jDropItemId,
         jstring jRenderShape,
-        jboolean jCanWalkThrough
+        jboolean jCanWalkThrough,
+        jstring jRegistryName
     );
 
     void Java_axo_jvm_Bridge_registerItem(
@@ -35,7 +36,8 @@ extern "C++" {
         jint id,
         jstring jname,
         jstring jiconName,
-        jint maxStackSize
+        jint maxStackSize,
+        jstring jRegistryName
     );
 #ifdef __cplusplus
 }
@@ -47,8 +49,9 @@ class PreStitchedTextureMap;
 extern "C++" {
 #endif
     class BufferedImage;
-    void Java_axo_jvm_Bridge_registerCrop(JNIEnv* env, jclass, jint, jstring, jobjectArray, jint, jint);
-    void Java_axo_jvm_Bridge_registerSeed(JNIEnv* env, jclass,jint id,jstring jname,jstring jiconName,jint maxStackSize,jint plantBlockId);
+    std::wstring AxoBridge_GetLang(const std::string& key);
+    void Java_axo_jvm_Bridge_registerCrop(JNIEnv* env, jclass, jint, jstring, jobjectArray, jint, jint, jstring jRegistryName);
+    void Java_axo_jvm_Bridge_registerSeed(JNIEnv* env, jclass,jint id,jstring jname,jstring jiconName,jint maxStackSize,jint plantBlockId, jstring jRegistryName);
     void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType);
     void AxoBridge_RegisterCustomIcons(PreStitchedTextureMap* textureMap);
 #ifdef __cplusplus
