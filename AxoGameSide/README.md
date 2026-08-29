@@ -77,6 +77,6 @@ and in ```Minecraft.Client/Textures.cpp``` replace:
 ```
 to:
 ```
-	terrain = new PreStitchedTextureMap(Icon::TYPE_TERRAIN, L"terrain", L"textures/blocks/", missingNo, false);
-	items = new PreStitchedTextureMap(Icon::TYPE_ITEM, L"items", L"textures/items/", missingNo, false);
+	terrain = new PreStitchedTextureMap(Icon::TYPE_TERRAIN, L"terrain", L"textures/blocks/", missingNo, false); // Axo_changed
+	items = new PreStitchedTextureMap(Icon::TYPE_ITEM, L"items", L"textures/items/", missingNo, false); // Axo_changed
 ```
