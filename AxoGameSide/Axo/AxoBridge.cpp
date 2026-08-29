@@ -120,9 +120,12 @@ extern "C" void AxoBridge_BootstrapJVM() {
      (void*)Java_axo_jvm_Bridge_registerCrop },
      {"registerSeed",
      "(ILjava/lang/String;Ljava/lang/String;IILjava/lang/String;)V",
-     (void*)Java_axo_jvm_Bridge_registerSeed}
+     (void*)Java_axo_jvm_Bridge_registerSeed},
+     {"registerBiome", 
+     "(ILjava/lang/String;IIFFII)V",
+     (void*)Java_axo_jvm_Bridge_registerBiome}
     };
-    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 4);
+    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 5);
     if (jrc != JNI_OK) {
         if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
         printf("[AxoJVM] ERROR: RegisterNatives failed\n");

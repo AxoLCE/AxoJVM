@@ -44,6 +44,7 @@ public class Bridge {
         modLoader.fireRegistrationEvents();
         registerAllBlocks();
         registerAllItem();
+        registerAllBiomes();
         IdMap.save();
         modLoader.enableMods();
     }
@@ -54,6 +55,9 @@ public class Bridge {
     }
     public static void registerAllBlocks(){
         BlockRegistry.registerAllTonative();
+    }
+    public static void registerAllBiomes(){
+        BiomeRegistry.registerAllToNative();
     }
     public static native void registerTile(
             int id,
@@ -92,6 +96,18 @@ public class Bridge {
             int plantBlockId,
             String registryName
     );
+
+    public static native void registerBiome(
+            int id,
+            String name,
+            int grassColor,
+            int foliageColor,
+            float temperature,
+            float downfall,
+            int topBlockId,
+            int fillerBlockId
+    );
+
     public static void registerAllItem(){
         ItemRegistry.registerAllToNative();
     }

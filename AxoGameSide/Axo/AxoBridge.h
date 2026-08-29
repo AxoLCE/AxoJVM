@@ -52,6 +52,7 @@ extern "C++" {
     std::wstring AxoBridge_GetLang(const std::string& key);
     void Java_axo_jvm_Bridge_registerCrop(JNIEnv* env, jclass, jint, jstring, jobjectArray, jint, jint, jstring jRegistryName);
     void Java_axo_jvm_Bridge_registerSeed(JNIEnv* env, jclass,jint id,jstring jname,jstring jiconName,jint maxStackSize,jint plantBlockId, jstring jRegistryName);
+    void Java_axo_jvm_Bridge_registerBiome(JNIEnv* env, jclass, jint, jstring, jint, jint, jfloat, jfloat, jint, jint);
     void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType);
     void AxoBridge_RegisterCustomIcons(PreStitchedTextureMap* textureMap);
 #ifdef __cplusplus

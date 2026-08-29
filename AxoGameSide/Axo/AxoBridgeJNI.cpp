@@ -24,6 +24,7 @@
 #include "../../Minecraft.Client/TexturePack.h"
 #include "../../Minecraft.Client/Minecraft.h"
 #include "../../Minecraft.World/ByteBuffer.h"
+#include "AxoJavaBiome.h"
 
 static std::unordered_map<std::wstring, Tile::SoundType*> g_soundMap;
 static bool g_soundMapInit = false;
@@ -396,4 +397,25 @@ std::wstring AxoBridge_GetLang(const std::string& key) {
     env->DeleteLocalRef(langClass);
 
     return result;
+}
+
+void JNICALL Java_axo_jvm_Bridge_registerBiome(
+    JNIEnv* env, jclass,
+    jint id,
+    jstring jname,
+    jint grassColor,
+    jint foliageColor,
+    jfloat temperature,
+    jfloat downfall,
+    jint topBlockId,
+    jint fillerBlockId
+) {
+    std::wstring name = JStringToWString(env, jname);
+    if (id < 0 || id>255) {
+        printf("[AxoJVM] ERROR: biome id %d out of range\n", id);
+        return;
+    }
+    AxoJavaBiome* biome = new AxoJavaBiome(id, name, grassColor, foliageColor, temperature, downfall, topBlockId, fillerBlockId);
+    Biome::biomes[id] = biome;
+    printf("[AxoJVM] Registered biome: %ls (id=%d)\n", name.c_str(), id);
 }

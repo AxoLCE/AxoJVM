@@ -62,6 +62,7 @@ public class ItemMap {
         register("gold_pickaxe", 285);
         register("gold_axe", 286);
         register("stone", 1);
+        register("grass_block", 2);
         register("dirt", 3);
         register("cobblestone", 4);
         register("wood", 5);

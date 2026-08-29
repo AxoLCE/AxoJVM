@@ -16,6 +16,10 @@ public class IdMap {
     private static final AtomicInteger NEXT_TILE_ID = new AtomicInteger(MIN_TILE_ID);
     private static final Map<String, Integer> ITEM_IDS = new HashMap<>();
     private static final AtomicInteger NEXT_ITEM_ID = new AtomicInteger(1000);
+    private static final int MIN_BIOME_ID = 100;
+    private static final int MAX_BIOME_ID = 255;
+    private static final Map<String, Integer> BIOME_IDS = new HashMap<>();
+    private static final AtomicInteger NEXT_BIOME_ID = new AtomicInteger(MIN_BIOME_ID);
 
     public static void load(){
         if(!Files.exists(MAP_FILE)){
@@ -133,10 +137,30 @@ public class IdMap {
         ITEM_IDS.put(key, newId);
         return newId;
     }
+
+    public static int getOrAllocateBiomeId(String modId, String biomeName){
+        String key = modId + ":" + biomeName;
+        Integer existing = BIOME_IDS.get(key);
+        if (existing != null){
+            return existing;
+        }
+        int newId = NEXT_BIOME_ID.getAndIncrement();
+        if (newId > MAX_BIOME_ID){
+            throw new IllegalStateException(
+                    "[AxoJVM] Out of biome ID slots!"
+            );
+        }
+        BIOME_IDS.put(key, newId);
+        return newId;
+    }
+
     public static Integer getTileId(String modId, String blockName){
         return TILE_IDS.get(modId + ":" + blockName);
     }
     public static Integer getItemId(String modId, String itemName){
         return ITEM_IDS.get(modId + ":" + itemName);
+    }
+    public static Integer getBiomeId(String modId, String biomeName){
+        return BIOME_IDS.get(modId + ":" + biomeName);
     }
 }
