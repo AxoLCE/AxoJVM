@@ -16,6 +16,7 @@ AxoJVM is a WIP Java modloader for MinecraftLCE
 - [x] Lang files support
 - [x] Custom generation rules (custom biomes, block generation etc)
 - [ ] Custom armor
+- [ ] Custom recipes
 - [ ] item "flags" (damage etc.)
 - [ ] Basic functions (onBlockDestroy etc.)
 - [ ] Mods tab in main menu
