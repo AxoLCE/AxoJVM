@@ -80,3 +80,30 @@ to:
 	terrain = new PreStitchedTextureMap(Icon::TYPE_TERRAIN, L"terrain", L"textures/blocks/", missingNo, false); // Axo_changed
 	items = new PreStitchedTextureMap(Icon::TYPE_ITEM, L"items", L"textures/items/", missingNo, false); // Axo_changed
 ```
+and in ```Minecraft.World/RandomLevelSource.cpp``` in ```getChunk``` after ```buildSurfaces(xOffs, zOffs, blocks, blockData, biomes);```:
+```
+	// AXO_BRIDGE_MARKER_START
+	AxoBridge_RunSurfaceGen(level, blocks, xOffs, zOffs);
+	// AXO_BRIDGE_MARKER_END
+```
+and in the same file in ```postProcess``` after ```biome->decorate(level, pprandom, xo, zo);``` add:
+```
+    // AXO_BRIDGE_MARKER_START
+    AxoBridge_RunDecorateGen(level, pprandom, xt, zt);
+    // AXO_BRIDGE_MARKER_END
+```
+and at the top of the file add ```#include "Axo/AxoBridge.h"```
+In ```Minecraft.World/BiomeInitLayer.cpp``` after:
+```
+if (levelType != LevelType::lvl_normal_1_1 && levelType == LevelType::lvl_customized)
+{
+    this->customSettings = (CustomizableSourceSettings*)superflatConfig; 
+}
+```
+add:
+```
+    // AXO_BRIDGE_MARKER_START
+    AxoBridge_ApplyBiomeSpawns(desertBiomes, warmBiomes, coolBiomes, icyBiomes);
+    // AXO_BRIDGE_MARKER_END
+```
+and compile the game

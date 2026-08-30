@@ -1,5 +1,6 @@
 package axo.jvm.api;
 
+import axo.jvm.BiomeRegistry;
 import axo.jvm.helpers.IdMap;
 
 public class Biome {
@@ -29,17 +30,35 @@ public class Biome {
     public int getFoliageColor() {
         return properties.foliageColor;
     }
+    public int getWaterColor(){
+        return properties.waterColor;
+    }
+    public int getSkyColor(){
+        return properties.skyColor;
+    }
     public float getTemperature() {
         return properties.temperature;
     }
     public float getDownfall() {
         return properties.downfall;
     }
+    public float getDepth(){
+        return properties.depth;
+    }
+    public float getScale(){
+        return properties.scale;
+    }
     public String getTopBlock() {
         return properties.topBlock;
     }
     public String getFillerBlock() {
         return properties.fillerBlock;
+    }
+    public BiomeProperties.Category getCategory(){
+        return properties.spawnCategory;
+    }
+    public int getSpawnWeight(){
+        return properties.spawnWeight;
     }
 
     public void assignRegistry(String modId) {

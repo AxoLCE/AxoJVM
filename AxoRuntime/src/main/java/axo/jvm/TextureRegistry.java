@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class TextureRegistry {
     private static final int START_SLOT_BLOCK = 400;
-    private static final int START_SLOT_ITEM = 250;
+    private static final int START_SLOT_ITEM = 260;
     private static int nextSlotBlock = START_SLOT_BLOCK;
     private static int nextSlotItem = START_SLOT_ITEM;
 

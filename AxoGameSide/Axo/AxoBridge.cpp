@@ -6,11 +6,15 @@
 typedef jint(JNICALL* CreateJVM_t)(JavaVM**, void**, void*);
 
 static JavaVM* g_jvm = nullptr;
-static JNIEnv* g_env = nullptr;
+static thread_local JNIEnv* g_env = nullptr;
 static HMODULE g_jvmDll = nullptr;
 
 JNIEnv* Axo_GetJNIEnv() {
     return g_env;
+}
+
+JavaVM* Axo_GetJavaVM() {
+    return g_jvm;
 }
 
 // Detect which side is running axo
@@ -122,10 +126,18 @@ extern "C" void AxoBridge_BootstrapJVM() {
      "(ILjava/lang/String;Ljava/lang/String;IILjava/lang/String;)V",
      (void*)Java_axo_jvm_Bridge_registerSeed},
      {"registerBiome", 
-     "(ILjava/lang/String;IIFFII)V",
-     (void*)Java_axo_jvm_Bridge_registerBiome}
+     "(ILjava/lang/String;IIIIFFFFII)V",
+     (void*)Java_axo_jvm_Bridge_registerBiome},
+     {"randomInt", "(JI)I", (void*)Java_axo_jvm_Bridge_randomInt},
+     {"setRandomSeed", "(JJ)V", (void*)Java_axo_jvm_Bridge_setRandomSeed},
+     {"getBlock", "(JIII)I", (void*)Java_axo_jvm_Bridge_getBlock},
+     {"setBlock", "(JIIII)V", (void*)Java_axo_jvm_Bridge_setBlock},
+     {"setBlockWithData", "(JIIIII)V", (void*)Java_axo_jvm_Bridge_setBlockWithData},
+     {"getBiomeAt", "(JII)I", (void*)Java_axo_jvm_Bridge_getBiomeAt},
+     {"getSeaLevel", "(J)I", (void*)Java_axo_jvm_Bridge_getSeaLevel},
+     {"registerBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerBiomeSpawn}
     };
-    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 5);
+    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 13);
     if (jrc != JNI_OK) {
         if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
         printf("[AxoJVM] ERROR: RegisterNatives failed\n");

@@ -97,13 +97,27 @@ public class Bridge {
             String registryName
     );
 
+    public static native int randomInt(long randomPtr, int bound);
+    public static native void setRandomSeed(long randomPtr, long seed);
+    public static native int getBlock(long levelPtr, int x, int y, int z);
+    public static native void setBlock(long levelPtr, int x, int y, int z, int tile);
+    public static native void setBlockWithData(long levelPtr, int x, int y, int z, int tile, int data);
+    public static native int getBiomeAt(long levelPtr, int x, int z);
+    public static native int getSeaLevel(long levelPtr);
+
+    public static native void registerBiomeSpawn(int biomeId, int category, int weight);
+
     public static native void registerBiome(
             int id,
             String name,
             int grassColor,
             int foliageColor,
+            int waterColor,
+            int skyColor,
             float temperature,
             float downfall,
+            float depth,
+            float scale,
             int topBlockId,
             int fillerBlockId
     );

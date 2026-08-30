@@ -405,8 +405,12 @@ void JNICALL Java_axo_jvm_Bridge_registerBiome(
     jstring jname,
     jint grassColor,
     jint foliageColor,
+    jint waterColor,
+    jint skyColor,
     jfloat temperature,
     jfloat downfall,
+    jfloat depth,
+    jfloat scale,
     jint topBlockId,
     jint fillerBlockId
 ) {
@@ -415,7 +419,7 @@ void JNICALL Java_axo_jvm_Bridge_registerBiome(
         printf("[AxoJVM] ERROR: biome id %d out of range\n", id);
         return;
     }
-    AxoJavaBiome* biome = new AxoJavaBiome(id, name, grassColor, foliageColor, temperature, downfall, topBlockId, fillerBlockId);
+    AxoJavaBiome* biome = new AxoJavaBiome(id, name, grassColor, foliageColor, waterColor, skyColor, temperature, downfall, depth, scale, topBlockId, fillerBlockId);
     Biome::biomes[id] = biome;
     printf("[AxoJVM] Registered biome: %ls (id=%d)\n", name.c_str(), id);
 }

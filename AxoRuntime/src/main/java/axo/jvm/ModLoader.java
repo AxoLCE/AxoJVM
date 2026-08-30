@@ -3,6 +3,7 @@ package axo.jvm;
 import axo.jvm.event.RegisterBiomeEvent;
 import axo.jvm.event.RegisterBlockEvent;
 import axo.jvm.event.RegisterItemEvent;
+import axo.jvm.event.RegisterWorldGenEvent;
 import axo.jvm.helpers.ModRegistry;
 
 import java.lang.reflect.Method;
@@ -44,9 +45,11 @@ public class ModLoader {
             RegisterBlockEvent event = new RegisterBlockEvent(modId);
             RegisterItemEvent event1 = new RegisterItemEvent(modId);
             RegisterBiomeEvent event2 = new RegisterBiomeEvent(modId);
+            RegisterWorldGenEvent event3 = new RegisterWorldGenEvent(modId);
             mod.onRegisterBlock(event);
             mod.onRegisterItem(event1);
             mod.onRegisterBiome(event2);
+            mod.onRegisterWorldGen(event3);
         }
     }
 
