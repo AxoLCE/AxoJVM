@@ -114,20 +114,11 @@ extern "C" void AxoBridge_BootstrapJVM() {
 
     // Register to native
     JNINativeMethod methods[] = {
-    {"registerTile", 
-     "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZILjava/lang/String;ZLjava/lang/String;)V",
-     (void*)Java_axo_jvm_Bridge_registerTile},
-    {"registerItem", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)V",
-     (void*)Java_axo_jvm_Bridge_registerItem},
-    { "registerCrop",
-     "(ILjava/lang/String;[Ljava/lang/String;IILjava/lang/String;)V",
-     (void*)Java_axo_jvm_Bridge_registerCrop },
-     {"registerSeed",
-     "(ILjava/lang/String;Ljava/lang/String;IILjava/lang/String;)V",
-     (void*)Java_axo_jvm_Bridge_registerSeed},
-     {"registerBiome", 
-     "(ILjava/lang/String;IIIIFFFFII)V",
-     (void*)Java_axo_jvm_Bridge_registerBiome},
+     {"registerTile", "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZILjava/lang/String;ZLjava/lang/String;)V",(void*)Java_axo_jvm_Bridge_registerTile},
+     {"registerItem", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)V",(void*)Java_axo_jvm_Bridge_registerItem},
+     {"registerCrop","(ILjava/lang/String;[Ljava/lang/String;IILjava/lang/String;)V",(void*)Java_axo_jvm_Bridge_registerCrop },
+     {"registerSeed","(ILjava/lang/String;Ljava/lang/String;IILjava/lang/String;)V",(void*)Java_axo_jvm_Bridge_registerSeed},
+     {"registerBiome", "(ILjava/lang/String;IIIIFFFFII)V", (void*)Java_axo_jvm_Bridge_registerBiome},
      {"randomInt", "(JI)I", (void*)Java_axo_jvm_Bridge_randomInt},
      {"setRandomSeed", "(JJ)V", (void*)Java_axo_jvm_Bridge_setRandomSeed},
      {"getBlock", "(JIII)I", (void*)Java_axo_jvm_Bridge_getBlock},
@@ -135,9 +126,10 @@ extern "C" void AxoBridge_BootstrapJVM() {
      {"setBlockWithData", "(JIIIII)V", (void*)Java_axo_jvm_Bridge_setBlockWithData},
      {"getBiomeAt", "(JII)I", (void*)Java_axo_jvm_Bridge_getBiomeAt},
      {"getSeaLevel", "(J)I", (void*)Java_axo_jvm_Bridge_getSeaLevel},
-     {"registerBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerBiomeSpawn}
+     {"registerBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerBiomeSpawn},
+     {"registerDimensionBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerDimensionBiomeSpawn}
     };
-    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 13);
+    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 14);
     if (jrc != JNI_OK) {
         if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
         printf("[AxoJVM] ERROR: RegisterNatives failed\n");

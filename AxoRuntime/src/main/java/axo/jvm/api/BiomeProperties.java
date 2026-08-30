@@ -21,6 +21,8 @@ public class BiomeProperties {
     public int spawnWeight = 0;
     public int waterColor = 0x3F76E4;
     public int skyColor = 0x78A7FF;
+    public Dimension spawnDimension = null;
+    public int dimensionSpawnWeight = 0;
 
     public static BiomeProperties of(){
         return new BiomeProperties();
@@ -65,6 +67,13 @@ public class BiomeProperties {
         this.spawnWeight = weight;
         return this;
     }
+
+    public BiomeProperties spawnInDimension(Dimension dimension, int weight){
+        this.spawnDimension = dimension;
+        this.dimensionSpawnWeight = weight;
+        return this;
+    }
+
     public BiomeProperties waterColor(int c) {
         this.waterColor = c; return this;
     }

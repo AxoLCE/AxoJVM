@@ -379,6 +379,7 @@ void AxoBridge_PaintCustomTextures(BufferedImage* atlasImage, int iconType) {
     env->DeleteLocalRef(customTexClass);
 }
 
+// For langs
 std::wstring AxoBridge_GetLang(const std::string& key) {
     JNIEnv* env = Axo_GetJNIEnv();
     if (!env) return L"";
@@ -399,6 +400,7 @@ std::wstring AxoBridge_GetLang(const std::string& key) {
     return result;
 }
 
+// Define biome
 void JNICALL Java_axo_jvm_Bridge_registerBiome(
     JNIEnv* env, jclass,
     jint id,

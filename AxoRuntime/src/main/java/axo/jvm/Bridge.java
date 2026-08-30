@@ -106,6 +106,7 @@ public class Bridge {
     public static native int getSeaLevel(long levelPtr);
 
     public static native void registerBiomeSpawn(int biomeId, int category, int weight);
+    public static native void registerDimensionBiomeSpawn(int biomeId, int dimension, int weight);
 
     public static native void registerBiome(
             int id,

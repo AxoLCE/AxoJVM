@@ -106,4 +106,75 @@ add:
     AxoBridge_ApplyBiomeSpawns(desertBiomes, warmBiomes, coolBiomes, icyBiomes);
     // AXO_BRIDGE_MARKER_END
 ```
+and add ```#include "Axo/AxoBridge.h"```
+in: ```Minecraft.World/HellRandomLevelSource.cpp``` after:
+```
+netherBridgeFeature->apply(this, level, xOffs, zOffs, blocks);
+```
+add:
+```
+// AXO_MARKER_START
+AxoBridge_RunSurfaceGen(level, blocks, xOffs, zOffs);
+// AXO_MARKER_END
+```
+and after:
+```
+LevelChunk *levelChunk = new LevelChunk(level, blocks, xOffs, zOffs);
+levelChunk->setCheckAllLight();
+```
+add:
+```
+// AXO_MARKER_START
+AxoBridge_ApplyDimensionBiomes(levelChunk, level, xOffs, zOffs);
+// AXO_MARKER_END
+```
+after:
+```
+for (int i = 0; i < 16; i++)
+{
+	int x = xo + random->nextInt(16);
+	int y = random->nextInt(Level::genDepth - 20) + 10;
+	int z = zo + random->nextInt(16);
+	HellSpringFeature hellSpringFeature(Tile::flowing_lava_Id, true);
+	hellSpringFeature.place(level, random, x, y, z);
+}
+```
+add
+```
+// AXO_MARKER_START
+AxoBridge_RunDecorateGen(level, pprandom, xt, zt);
+// AXO_MARKER_END
+```
+in ```Minecraft.World/TheEndLevelRandomLevelSource.cpp``` after:
+```
+prepareHeights(xOffs, zOffs, blocks, biomes);
+buildSurfaces(xOffs, zOffs, blocks, biomes);
+```
+add:
+```
+// AXO_MARKER_START
+AxoBridge_RunSurfaceGen(level, blocks, xOffs, zOffs);
+// AXO_MARKER_END
+```
+after:
+```
+LevelChunk *levelChunk = new LevelChunk(level, blocks, xOffs, zOffs);
+```
+add:
+```
+// AXO_MARKER_START
+AxoBridge_ApplyDimensionBiomes(levelChunk, level, xOffs, zOffs);
+// AXO_MARKER_END
+```
+after:
+```
+Biome *biome = level->getBiome(xo + 16, zo + 16);
+biome->decorate(level, pprandom, xo, zo);		// 4J - passing pprandom rather than level->random here to make this consistent with our parallel world generation
+```
+add:
+```
+// AXO_MARKER_START
+AxoBridge_RunDecorateGen(level, pprandom, xt, zt);
+// AXO_MARKER_END
+```
 and compile the game

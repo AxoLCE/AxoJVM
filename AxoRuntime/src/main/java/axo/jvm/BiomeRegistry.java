@@ -31,6 +31,8 @@ public class BiomeRegistry {
         VANILLA_BY_ID.put(32, "minecraft:mega_taiga");
         VANILLA_BY_ID.put(35, "minecraft:savanna");
         VANILLA_BY_ID.put(37, "minecraft:mesa");
+        VANILLA_BY_ID.put(8, "minecraft:hell");
+        VANILLA_BY_ID.put(9, "minecraft:sky");
     }
 
     public static void register(Biome biome, String modId){
@@ -60,6 +62,9 @@ public class BiomeRegistry {
             );
             if (biome.getSpawnWeight() > 0 && biome.getCategory() != null) {
                 Bridge.registerBiomeSpawn(biome.getId(), biome.getCategory().id, biome.getSpawnWeight());
+            }
+            if (biome.getDimensionSpawnWeight() > 0 && biome.getSpawnDimension() != null) {
+                Bridge.registerDimensionBiomeSpawn(biome.getId(), biome.getSpawnDimension().id, biome.getDimensionSpawnWeight());
             }
         }
     }

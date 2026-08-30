@@ -60,6 +60,12 @@ public class Biome {
     public int getSpawnWeight(){
         return properties.spawnWeight;
     }
+    public Dimension getSpawnDimension(){
+        return properties.spawnDimension;
+    }
+    public int getDimensionSpawnWeight(){
+        return properties.dimensionSpawnWeight;
+    }
 
     public void assignRegistry(String modId) {
         if (this.id != -1) throw new IllegalStateException("[AxoJVM] Biome already registered");

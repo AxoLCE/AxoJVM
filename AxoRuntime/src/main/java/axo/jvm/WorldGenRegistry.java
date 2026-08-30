@@ -10,12 +10,13 @@ public class WorldGenRegistry {
 
     public static void register(WorldGen gen, String modId){
         ALL.add(gen);
-        System.out.println("[AxoJVM] Registered worldgen (phase " + gen.getPhase() + ") for mod " + modId);
+        System.out.println("[AxoJVM] Registered worldgen (phase " + gen.getPhase() + ", dimension " + gen.getDimension() + ") for mod " + modId);
     }
 
-    public static void runSurface(long levelPtr, int chunkX, int chunkZ, long randomPtr, int biomeId) {
+    public static void runSurface(long levelPtr, int chunkX, int chunkZ, long randomPtr, int biomeId, int dimension) {
         for (WorldGen gen : ALL) {
             if (gen.getPhase() != WorldGen.Phase.SURFACE) continue;
+            if (!gen.appliesToDimension(dimension)) continue;
             if (!gen.appliesToBiome(biomeId)) continue;
             try {
                 gen.generate(levelPtr, chunkX, chunkZ, randomPtr);
@@ -25,9 +26,10 @@ public class WorldGenRegistry {
         }
     }
 
-    public static void runDecorate(long levelPtr, int chunkX, int chunkZ, long randomPtr, int biomeId) {
+    public static void runDecorate(long levelPtr, int chunkX, int chunkZ, long randomPtr, int biomeId, int dimension) {
         for (WorldGen gen : ALL) {
             if (gen.getPhase() != WorldGen.Phase.DECORATE) continue;
+            if (!gen.appliesToDimension(dimension)) continue;
             if (!gen.appliesToBiome(biomeId)) continue;
             try {
                 gen.generate(levelPtr, chunkX, chunkZ, randomPtr);

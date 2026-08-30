@@ -66,10 +66,13 @@ extern "C++" {
 
     class Level;
     class Random;
+    class LevelChunk;
 
     void AxoBridge_RunSurfaceGen(Level* level, byteArray blocks, int xOffs, int zOffs);
     void AxoBridge_RunDecorateGen(Level* level, Random* random, int xt, int zt);
     void AxoBridge_ApplyBiomeSpawns(BiomeArray& desertBiomes, BiomeArray& warmBiomes, BiomeArray& coolBiomes, BiomeArray& icyBiomes);
+    void AxoBridge_ApplyDimensionBiomes(LevelChunk* levelChunk, Level* level, int xOffs, int zOffs);
+    void Java_axo_jvm_Bridge_registerDimensionBiomeSpawn(JNIEnv*, jclass, jint, jint, jint);
 
     jint Java_axo_jvm_Bridge_randomInt(JNIEnv*, jclass, jlong, jint);
     void Java_axo_jvm_Bridge_setRandomSeed(JNIEnv*, jclass, jlong, jlong);

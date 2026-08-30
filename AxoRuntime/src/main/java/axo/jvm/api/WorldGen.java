@@ -14,6 +14,7 @@ public abstract class WorldGen {
 
     private Phase phase = Phase.DECORATE;
     private final Set<String> biomes = new HashSet<>();
+    private int dimension = Dimension.OVERWORLD.id;
 
     protected final void setPhase(Phase phase){
         this.phase = phase;
@@ -26,8 +27,16 @@ public abstract class WorldGen {
         }
     }
 
+    protected final void setDimension(Dimension dimension){
+        this.dimension = dimension.id;
+    }
+
     public Phase getPhase(){
         return phase;
+    }
+
+    public int getDimension(){
+        return dimension;
     }
 
     public boolean appliesToBiome(int biomeId){
@@ -37,6 +46,11 @@ public abstract class WorldGen {
         String name = BiomeRegistry.getNameForId(biomeId);
         return name != null && biomes.contains(name);
     }
+
+    public boolean appliesToDimension(int dimension){
+        return this.dimension == dimension;
+    }
+
     public abstract void generate(long levelPtr, int chunkX, int chunkZ, long randomPtr);
 
     protected static int randomInt(long randomPtr, int bound) {
