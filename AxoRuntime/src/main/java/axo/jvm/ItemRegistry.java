@@ -36,6 +36,16 @@ public class ItemRegistry {
                             item.getName(),
                             item.getIconName(),
                             item.getMaxStackSize(),
+                            item.getProperties().maxDamage,
+                            item.getProperties().attackDamage,
+                            item.getProperties().destroySpeed,
+                            item.getProperties().enchantmentValue,
+                            item.getProperties().handEquipped,
+                            item.getProperties().stackedByData,
+                            item.getProperties().useAnimation,
+                            item.getProperties().useDuration,
+                            item.getProperties().foil,
+                            item.getProperties().rarity,
                             item.getProperties().plantBlockId,
                             item.getRegistryName()
                     );
@@ -45,6 +55,16 @@ public class ItemRegistry {
                             item.getName(),
                             item.getIconName(),
                             item.getMaxStackSize(),
+                            item.getProperties().maxDamage,
+                            item.getProperties().attackDamage,
+                            item.getProperties().destroySpeed,
+                            item.getProperties().enchantmentValue,
+                            item.getProperties().handEquipped,
+                            item.getProperties().stackedByData,
+                            item.getProperties().useAnimation,
+                            item.getProperties().useDuration,
+                            item.getProperties().foil,
+                            item.getProperties().rarity,
                             item.getRegistryName()
                     );
                 }

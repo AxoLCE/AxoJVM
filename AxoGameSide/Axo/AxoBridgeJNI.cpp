@@ -144,21 +144,52 @@ void JNICALL Java_axo_jvm_Bridge_registerTile(
 }
 // Define items
 void JNICALL Java_axo_jvm_Bridge_registerItem(
-    JNIEnv* env, jclass,
+    JNIEnv* env,
+    jclass,
     jint id,
     jstring jname,
     jstring jiconName,
     jint maxStackSize,
+    jint maxDamage,
+    jfloat attackDamage,
+    jfloat destroySpeed,
+    jint enchantmentValue,
+    jboolean handEquipped,
+    jboolean stackedByData,
+    jint useAnimation,
+    jint useDuration,
+    jboolean foil,
+    jint rarity,
     jstring jRegistryName
 ) {
     std::wstring name = JStringToWString(env, jname);
     std::wstring iconName = JStringToWString(env, jiconName);
     std::wstring registryName = JStringToWString(env, jRegistryName);
+
     if (id < 1000 || id > 31999) {
         printf("[AxoJVM] ERROR: item id %d out of range\n", id);
         return;
     }
-    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, -1, registryName);
+
+    new AxoJavaItem(
+        id - 256,
+        iconName,
+        name,
+        maxStackSize,
+        maxDamage,
+        attackDamage,
+        destroySpeed,
+        enchantmentValue,
+        handEquipped == JNI_TRUE,
+        stackedByData == JNI_TRUE,
+        useAnimation,
+        useDuration,
+        foil == JNI_TRUE,
+        rarity,
+        -1,
+        registryName
+    );
+
     printf("[AxoJVM] Registered item: %ls (id=%d)\n", name.c_str(), id);
 }
 // Define crops
@@ -190,23 +221,53 @@ void JNICALL Java_axo_jvm_Bridge_registerCrop(
 
 // Define seeds
 void JNICALL Java_axo_jvm_Bridge_registerSeed(
-    JNIEnv* env, jclass,
+    JNIEnv* env,
+    jclass,
     jint id,
     jstring jname,
     jstring jiconName,
     jint maxStackSize,
+    jint maxDamage,
+    jfloat attackDamage,
+    jfloat destroySpeed,
+    jint enchantmentValue,
+    jboolean handEquipped,
+    jboolean stackedByData,
+    jint useAnimation,
+    jint useDuration,
+    jboolean foil,
+    jint rarity,
     jint plantBlockId,
     jstring jRegistryName
 ) {
     std::wstring name = JStringToWString(env, jname);
     std::wstring iconName = JStringToWString(env, jiconName);
     std::wstring registryName = JStringToWString(env, jRegistryName);
-    
+
     if (id < 1000 || id > 31999) {
         printf("[AxoJVM] ERROR: item id %d out of range\n", id);
         return;
     }
-    AxoJavaItem* item = new AxoJavaItem(id - 256, iconName, name, maxStackSize, plantBlockId, registryName);
+
+    new AxoJavaItem(
+        id - 256,
+        iconName,
+        name,
+        maxStackSize,
+        maxDamage,
+        attackDamage,
+        destroySpeed,
+        enchantmentValue,
+        handEquipped == JNI_TRUE,
+        stackedByData == JNI_TRUE,
+        useAnimation,
+        useDuration,
+        foil == JNI_TRUE,
+        rarity,
+        plantBlockId,
+        registryName
+    );
+
     printf("[AxoJVM] Registered seed: %ls (id=%d, plant=%d)\n", name.c_str(), id, plantBlockId);
 }
 // Register Icons

@@ -74,12 +74,22 @@ public class Bridge {
             String registryName
     );
     public static native void registerItem(
-        int id,
-        String name,
-        String iconName,
-        int maxStackSize,
-        String registryName
-        );
+            int id,
+            String name,
+            String iconName,
+            int maxStackSize,
+            int maxDamage,
+            float attackDamage,
+            float destroySpeed,
+            int enchantmentValue,
+            boolean handEquipped,
+            boolean stackedByData,
+            int useAnimation,
+            int useDuration,
+            boolean foil,
+            int rarity,
+            String registryName
+    );
     public static native void registerCrop(
             int id,
             String name,
@@ -93,6 +103,16 @@ public class Bridge {
             String name,
             String iconName,
             int maxStackSize,
+            int maxDamage,
+            float attackDamage,
+            float destroySpeed,
+            int enchantmentValue,
+            boolean handEquipped,
+            boolean stackedByData,
+            int useAnimation,
+            int useDuration,
+            boolean foil,
+            int rarity,
             int plantBlockId,
             String registryName
     );
