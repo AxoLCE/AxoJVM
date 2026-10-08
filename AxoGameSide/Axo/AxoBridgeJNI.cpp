@@ -486,3 +486,74 @@ void JNICALL Java_axo_jvm_Bridge_registerBiome(
     Biome::biomes[id] = biome;
     printf("[AxoJVM] Registered biome: %ls (id=%d)\n", name.c_str(), id);
 }
+
+// Array for Mods
+jobjectArray JNICALL Java_axo_jvm_Bridge_getModList(JNIEnv* env, jclass) {
+    jclass modLoaderClass  = env->FindClass("axo/jvm/ModLoader");
+    if (!modLoaderClass ) {
+        return nullptr;
+    }
+    jmethodID getModListMethod = env->GetStaticMethodID(
+        modLoaderClass ,
+        "getModList",
+        "()[Ljava/lang/String;"
+    );
+    if (!getModListMethod) {
+        env->DeleteLocalRef(modLoaderClass );
+        return nullptr;
+    }
+    jobjectArray result = static_cast<jobjectArray>(
+        env->CallStaticObjectMethod(modLoaderClass , getModListMethod)
+    );
+    env->DeleteLocalRef(modLoaderClass);
+    return result;
+}
+
+static std::vector<std::wstring> SplitAxoModInfo(const std::wstring& value) {
+    std::vector<std::wstring> result;
+    size_t start = 0;
+    while (true) {
+        size_t separator = value.find(L'\x001f', start);
+        if (separator == std::wstring::npos) {
+            result.push_back(value.substr(start));
+            break;
+        }
+        result.push_back(value.substr(start, separator - start));
+        start = separator + 1;
+    }
+    return result;
+}
+
+std::vector<AxoModInfo> AxoBridge_GetMods() {
+    std::vector<AxoModInfo> result;
+    JNIEnv* env = Axo_GetJNIEnv();
+    if (!env) {
+        return result;
+    }
+    jobjectArray mods = Java_axo_jvm_Bridge_getModList(env, nullptr);
+    if (!mods) {
+        return result;
+    }
+    jsize count = env->GetArrayLength(mods);
+    for (jsize i = 0; i < count; i++) {
+        jstring entry = static_cast<jstring>(
+            env->GetObjectArrayElement(mods, i)
+        );
+        std::wstring value = JStringToWString(env, entry);
+        std::vector<std::wstring> fields = SplitAxoModInfo(value);
+        if (fields.size() >= 7) {
+            AxoModInfo info;
+            info.id = fields[0];
+            info.name = fields[1];
+            info.version = fields[2];
+            info.author = fields[3];
+            info.description = fields[4];
+            info.status = fields[5];
+            info.reason = fields[6];
+            result.push_back(info);
+        }
+        env->DeleteLocalRef(entry);
+    }
+    env->DeleteLocalRef(mods);
+    return result;
+}

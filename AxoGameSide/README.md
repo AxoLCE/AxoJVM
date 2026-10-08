@@ -177,4 +177,111 @@ add:
 AxoBridge_RunDecorateGen(level, pprandom, xt, zt);
 // AXO_MARKER_END
 ```
+
+FOR MODS TAB!!
+Copy the files from path of Miencraft.Client\Common\UI to the same path in game files
+and in Minecraft.Client\cmake\sources\Windows.cmake after:
+```
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.h"
+```
+add:
+```
+  # AXO_ADDED
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_ModsMenu.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_ModsMenu.h"
+  # AXO_ADDED
+```
+In UIScene_MainMenu.cpp after:
+```
+m_buttons[static_cast<int>(eControl_Achievements)].init( (UIString)IDS_ACHIEVEMENTS,eControl_Achievements);
+```
+add:
+```
+	// AXO_ADDED
+	m_buttons[static_cast<int>(eControl_Mods)].init(L"Mods",eControl_Mods);
+	// AXO_ADDED
+```
+in the same file after:
+```
+	case eControl_Achievements:
+		//CD - Added for audio
+		ui.PlayUISFX(eSFX_Press);
+
+		m_eAction=eAction_RunAchievements;
+		signInReturnedFunc = &UIScene_MainMenu::Achievements_SignInReturned;
+		break;
+```
+add:
+```
+	// AXO_ADDED
+	case eControl_Mods:
+		ui.PlayUISFX(eSFX_Press);
+		ui.NavigateToScene(primaryPad, eUIScene_ModsMenu);
+		return;
+	// AXO_ADDED
+```
+In UILayer.cpp after:
+```
+	case eUIScene_AchievementsMenu:
+		newScene = new UIScene_AchievementsMenu(iPad, initData, this);
+		break;
+```
+add:
+```
+	// AXO_ADDED
+	case eUIScene_ModsMenu:
+		newScene = new UIScene_ModsMenu(iPad, initData, this);
+		break;
+	// AXO_ADDED
+```
+and add include: ```#include "UIScene_ModsMenu.h"```
+In UIEnums.h after:
+```
+	eUIScene_BookMenu,
+	eUIScene_AchievementsMenu,
+```
+add:
+```
+	// AXO_ADDED
+	eUIScene_ModsMenu,
+	// AXO_ADDED
+```
+In UIScene_MainMenu.h after:
+```
+	enum EControls
+	{
+		eControl_PlayGame,
+		eControl_Leaderboards,
+		eControl_Achievements,
+```
+add:
+```
+		// AXO_CHANGED
+		eControl_Mods,
+		// AXO_CHANGED
+```
+And fragment that starts with:
+```
+	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_PlayGame], "Button1")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_Leaderboards], "Button2")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_Achievements], "Button3")
+```
+replace it with:
+```
+	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_PlayGame], "Button1")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_Leaderboards], "Button2")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_Achievements], "Button3")
+		// AXO_CHANGED
+		UI_MAP_ELEMENT(m_buttons[(int)eControl_Mods], "Button4")
+		// AXO_CHANGED
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_HelpAndOptions], "Button5")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_UnlockOrDLC], "Button9")
+#ifndef _DURANGO
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_MiniGames], "Button7")
+		UI_MAP_ELEMENT( m_buttons[(int)eControl_Exit], "Button6")
+```
+
 and compile the game

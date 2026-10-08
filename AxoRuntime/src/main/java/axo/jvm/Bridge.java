@@ -27,19 +27,46 @@ public class Bridge {
             String modId = JsonParser.readModIdFromManifest(jarPath);
             String modSide = JsonParser.readSideFromManifest(jarPath).toLowerCase();
             String modName = JsonParser.readNameFromManifest(jarPath);
+            String modVersion = JsonParser.readVersionFromManifest(jarPath);
+            String modAuthor = JsonParser.readAuthorFromManifest(jarPath);
+            String modDescription = JsonParser.readDescriptionFromManifest(jarPath);
             if (mainClass == null || mainClass.isEmpty()){
                 System.out.println("[AxoJVM] Skipping: "+ jarPath.getFileName());
                 continue;
             }
             if (modSide.equals("client") && gameSide.equals("server")){
+                ModLoader.registerInactive(
+                        modId,
+                        modName,
+                        modVersion,
+                        modAuthor,
+                        modDescription,
+                        "Client side only"
+                );
                 System.out.println("Mod: " + modName + " is client side only. Skipping" );
                 continue;
             }
             if (modSide.equals("server") && gameSide.equals("client")){
+                ModLoader.registerInactive(
+                        modId,
+                        modName,
+                        modVersion,
+                        modAuthor,
+                        modDescription,
+                        "Server side only"
+                );
                 System.out.println("Mod: " + modName + " is server side only. Skipping");
                 continue;
             }
-            modLoader.enableMod(jarPath, mainClass, modId);
+            modLoader.enableMod(
+                    jarPath,
+                    mainClass,
+                    modId,
+                    modName,
+                    modVersion,
+                    modAuthor,
+                    modDescription
+            );
         }
         modLoader.fireRegistrationEvents();
         registerAllBlocks();
@@ -146,4 +173,6 @@ public class Bridge {
     public static void registerAllItem(){
         ItemRegistry.registerAllToNative();
     }
+
+    public static native String[] getModList();
 }

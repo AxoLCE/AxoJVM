@@ -14,8 +14,11 @@ extern "C" {
 extern "C++" {
 #endif
     #include "include/jni.h"
+    #include <string>
+    #include <vector>
     JNIEnv* Axo_GetJNIEnv();
     JavaVM* Axo_GetJavaVM();
+    jobjectArray Java_axo_jvm_Bridge_getModList(JNIEnv* env, jclass);
     void Java_axo_jvm_Bridge_registerTile(
         JNIEnv* env, jclass,
         jint id,
@@ -51,6 +54,18 @@ extern "C++" {
         jint rarity,
         jstring jRegistryName
     );
+
+    struct AxoModInfo
+    {
+        std::wstring id;
+        std::wstring name;
+        std::wstring version;
+        std::wstring author;
+        std::wstring description;
+        std::wstring status;
+        std::wstring reason;
+    };
+    std::vector<AxoModInfo> AxoBridge_GetMods();
 #ifdef __cplusplus
 }
 #endif
