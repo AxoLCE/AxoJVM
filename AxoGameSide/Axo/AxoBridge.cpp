@@ -115,6 +115,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
     // Register to native
     JNINativeMethod methods[] = {
         {"getModList", "()[Ljava/lang/String;", (void*)Java_axo_jvm_Bridge_getModList},
+        {"getModIcon","(Ljava/lang/String;)[B",(void*)Java_axo_jvm_Bridge_getModIcon},
         {"registerTile", "(ILjava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/lang/String;ZILjava/lang/String;ZLjava/lang/String;)V", (void*)Java_axo_jvm_Bridge_registerTile},
         {"registerItem", "(ILjava/lang/String;Ljava/lang/String;IIFFIZZIIZILjava/lang/String;)V", (void*)Java_axo_jvm_Bridge_registerItem},
         {"registerCrop", "(ILjava/lang/String;[Ljava/lang/String;IILjava/lang/String;)V", (void*)Java_axo_jvm_Bridge_registerCrop},
@@ -130,7 +131,7 @@ extern "C" void AxoBridge_BootstrapJVM() {
         {"registerBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerBiomeSpawn},
         {"registerDimensionBiomeSpawn", "(III)V", (void*)Java_axo_jvm_Bridge_registerDimensionBiomeSpawn}
     };
-    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 15);
+    jint jrc = g_env->RegisterNatives(bridgeClass, methods, 16);
     if (jrc != JNI_OK) {
         if (g_env->ExceptionCheck()) { g_env->ExceptionDescribe(); g_env->ExceptionClear(); }
         printf("[AxoJVM] ERROR: RegisterNatives failed\n");

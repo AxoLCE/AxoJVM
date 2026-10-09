@@ -541,7 +541,7 @@ std::vector<AxoModInfo> AxoBridge_GetMods() {
         );
         std::wstring value = JStringToWString(env, entry);
         std::vector<std::wstring> fields = SplitAxoModInfo(value);
-        if (fields.size() >= 7) {
+        if (fields.size() >= 8) {
             AxoModInfo info;
             info.id = fields[0];
             info.name = fields[1];
@@ -550,10 +550,76 @@ std::vector<AxoModInfo> AxoBridge_GetMods() {
             info.description = fields[4];
             info.status = fields[5];
             info.reason = fields[6];
+            info.icon = fields[7];
             result.push_back(info);
         }
         env->DeleteLocalRef(entry);
     }
     env->DeleteLocalRef(mods);
     return result;
+}
+
+jbyteArray JNICALL Java_axo_jvm_Bridge_getModIcon(JNIEnv* env,jclass,jstring jmodId) {
+    jclass modLoaderClass = env->FindClass("axo/jvm/ModLoader");
+    if (!modLoaderClass) {
+        return nullptr;
+    }
+
+    jmethodID method = env->GetStaticMethodID(modLoaderClass, "getModIcon", "(Ljava/lang/String;)[B");
+    if (!method) {
+        env->DeleteLocalRef(modLoaderClass);
+        return nullptr;
+    }
+
+    jbyteArray result = static_cast<jbyteArray>(env->CallStaticObjectMethod(modLoaderClass, method, jmodId));
+    env->DeleteLocalRef(modLoaderClass);
+    return result;
+}
+
+bool AxoBridge_GetModIcon(const std::wstring& modId, std::vector<unsigned char>& iconData) {
+    iconData.clear();
+    JNIEnv* env = Axo_GetJNIEnv();
+    if (!env) {
+        return false;
+    }
+    jclass bridgeClass = env->FindClass("axo/jvm/Bridge");
+    if (!bridgeClass) {
+        return false;
+    }
+    jmethodID method = env->GetStaticMethodID(bridgeClass, "getModIcon", "(Ljava/lang/String;)[B");
+    if (!method) {
+        env->DeleteLocalRef(bridgeClass);
+        return false;
+    }
+    jstring jmodId = env->NewString(reinterpret_cast<const jchar*>(modId.data()),static_cast<jsize>(modId.length()));
+
+    jbyteArray result =static_cast<jbyteArray>(env->CallStaticObjectMethod(bridgeClass,method,jmodId));
+
+    if (!result)
+    {
+        env->DeleteLocalRef(jmodId);
+        env->DeleteLocalRef(bridgeClass);
+        return false;
+    }
+
+    jsize length = env->GetArrayLength(result);
+
+    if (length > 0)
+    {
+        jbyte* bytes =
+            env->GetByteArrayElements(result, nullptr);
+
+        if (bytes)
+        {
+            iconData.resize(static_cast<size_t>(length));
+            memcpy(iconData.data(),bytes,static_cast<size_t>(length));
+            env->ReleaseByteArrayElements(result,bytes,JNI_ABORT);
+        }
+    }
+
+    env->DeleteLocalRef(result);
+    env->DeleteLocalRef(jmodId);
+    env->DeleteLocalRef(bridgeClass);
+
+    return !iconData.empty();
 }

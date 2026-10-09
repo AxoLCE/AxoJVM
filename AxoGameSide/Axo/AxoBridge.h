@@ -64,8 +64,15 @@ extern "C++" {
         std::wstring description;
         std::wstring status;
         std::wstring reason;
+        std::wstring icon;
     };
     std::vector<AxoModInfo> AxoBridge_GetMods();
+    bool AxoBridge_GetModIcon(
+        const std::wstring& modId,
+        std::vector<unsigned char>& iconData
+    );
+
+    jbyteArray Java_axo_jvm_Bridge_getModIcon(JNIEnv* env,jclass,jstring jmodId);
 #ifdef __cplusplus
 }
 #endif

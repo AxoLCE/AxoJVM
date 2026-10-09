@@ -6,7 +6,6 @@
 #include "../Minecraft.World/HtmlString.h"
 #include "Windows64/KeyboardMouseInput.h"
 
-// Shit code :D
 UIScene_ModsMenu::UIScene_ModsMenu(
 	int iPad,
 	void* initData,
@@ -15,20 +14,33 @@ UIScene_ModsMenu::UIScene_ModsMenu(
 	: UIScene(iPad, parentLayer)
 {
 	initialiseMovie();
+
 	m_labelMods.init(L"Mods");
 	m_labelName.init(L"");
 	m_labelDescription.init(L"");
+
 	m_modsList.init(0);
+
 	m_funcSetDescription =
 		registerFastName(L"SetAchievementDescription");
+
 	m_mods = AxoBridge_GetMods();
 	m_showDescription = false;
 	m_selection = 0;
-	for (int i = 0; i < static_cast<int>(m_mods.size()); i++)
-	{
-		m_modsList.addnewItem(i + 1, L"");
-		m_modsList.EnableButton(i, true);
-	}
+
+	for (int i = 0; i < static_cast<int>(m_mods.size()); i++){
+    const AxoModInfo& mod = m_mods[i];
+    std::wstring texturePath;
+    std::vector<unsigned char> iconData;
+    if (!mod.icon.empty() && AxoBridge_GetModIcon(mod.id, iconData)){
+        texturePath =L"Graphics\\Mods\\"+ mod.id+ L".png";
+        registerSubstitutionTexture(texturePath,iconData.data(),static_cast<DWORD>(iconData.size()));
+    }
+
+    m_modsList.addnewItem(i + 1,texturePath);
+    m_modsList.EnableButton(i, true);
+}
+
 	if (!m_mods.empty())
 	{
 		m_selection = 1;
@@ -66,12 +78,14 @@ void UIScene_ModsMenu::SetModDescription(
 )
 {
 	std::wstring formattedDescription = L"";
+
 	if (!description.empty())
 	{
 		HtmlString htmlDescription(
 			description,
 			eHTMLColor_White
 		);
+
 		std::vector<HtmlString>* lines =
 			new std::vector<HtmlString>();
 
@@ -82,13 +96,17 @@ void UIScene_ModsMenu::SetModDescription(
 
 	IggyDataValue result;
 	IggyDataValue value[1];
+
 	value[0].type = IGGY_DATATYPE_string_UTF16;
+
 	IggyStringUTF16 stringValue;
 	stringValue.string =
 		(IggyUTF16*)formattedDescription.c_str();
 	stringValue.length =
 		static_cast<S32>(formattedDescription.length());
+
 	value[0].string16 = stringValue;
+
 	IggyPlayerCallMethodRS(
 		getMovie(),
 		&result,
@@ -157,6 +175,7 @@ void UIScene_ModsMenu::UpdateSelectedMod()
 		{
 			description += L"\n";
 		}
+
 		description += L"Author: ";
 		description += mod.author;
 	}
@@ -167,6 +186,7 @@ void UIScene_ModsMenu::UpdateSelectedMod()
 		{
 			description += L"\n\n";
 		}
+
 		description += mod.description;
 	}
 
@@ -176,8 +196,10 @@ void UIScene_ModsMenu::UpdateSelectedMod()
 		{
 			description += L"\n\n";
 		}
+
 		description += mod.reason;
 	}
+
 	SetModDescription(description);
 }
 
@@ -241,6 +263,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -257,6 +280,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -274,6 +298,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -293,6 +318,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -310,6 +336,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -329,6 +356,7 @@ void UIScene_ModsMenu::handleInput(
 				pressed,
 				released
 			);
+
 			handled = true;
 		}
 		break;
@@ -343,15 +371,18 @@ void UIScene_ModsMenu::tick()
 	{
 		return;
 	}
+
 	if (m_modsList.m_iCurrentSelection <= 0)
 	{
 		return;
 	}
+
 	if (m_modsList.m_iCurrentSelection >
 		static_cast<int>(m_mods.size()))
 	{
 		return;
 	}
+
 	if (m_modsList.m_iCurrentSelection != m_selection)
 	{
 		m_selection =
@@ -360,6 +391,7 @@ void UIScene_ModsMenu::tick()
 		m_modsList.setCurrentSelection(
 			m_selection
 		);
+
 		UpdateSelectedMod();
 	}
 }
@@ -375,6 +407,7 @@ void UIScene_ModsMenu::handleFocusChange(
 		m_modsList.updateChildFocus(
 			static_cast<int>(childId)
 		);
+
 		if (m_modsList.m_iCurrentSelection > 0 &&
 			m_modsList.m_iCurrentSelection <=
 			static_cast<int>(m_mods.size()))
@@ -386,6 +419,7 @@ void UIScene_ModsMenu::handleFocusChange(
 		}
 		break;
 	}
+
 	updateTooltips();
 }
 
